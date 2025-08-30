@@ -4,8 +4,11 @@
     >
         <div class="mx-auto w-full max-w-80 sm:mx-0 sm:w-80">
             <!-- Logo -->
-            <div class="mx-auto w-12">
-                <img src="images/logo/logo.svg" />
+            <div class="flex justify-center">
+                <div class="flex flex-col items-center">
+                    <img src="images/logo/logo-black.svg" class="block dark:hidden h-10 w-auto" />
+                    <img src="images/logo/logo.svg" class="hidden dark:block h-10 w-auto" />
+                </div>
             </div>
 
             <!-- Title -->
@@ -32,7 +35,7 @@
                 <span>Go to</span>
                 <a
                     class="ml-1 text-primary-500 hover:underline"
-                    [routerLink]="['/sign-in']"
+                    [routerLink]="['sign-in']"
                     >sign in
                 </a>
             </div>

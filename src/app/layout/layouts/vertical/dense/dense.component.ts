@@ -29,7 +29,6 @@ import { Subject, takeUntil } from 'rxjs';
         FuseVerticalNavigationComponent,
         MatButtonModule,
         MatIconModule,
-        LanguagesComponent,
         FuseFullscreenComponent,
         SearchComponent,
         // ShortcutsComponent,

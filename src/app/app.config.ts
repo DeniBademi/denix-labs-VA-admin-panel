@@ -55,10 +55,6 @@ export const appConfig: ApplicationConfig = {
                         id: 'en',
                         label: 'English',
                     },
-                    {
-                        id: 'tr',
-                        label: 'Turkish',
-                    },
                 ],
                 defaultLang: 'en',
                 fallbackLang: 'en',

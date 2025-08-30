@@ -39,7 +39,11 @@ export class AuthService {
      * @param email
      */
     forgotPassword(email: string): Observable<any> {
-        return this._httpClient.post('api/auth/forgot-password', email);
+        return from(
+            this._supabaseService.getSupabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${location.origin}/reset-password`
+            })
+        );
     }
 
     /**
@@ -48,7 +52,10 @@ export class AuthService {
      * @param password
      */
     resetPassword(password: string): Observable<any> {
-        return this._httpClient.post('api/auth/reset-password', password);
+        // Requires the user to be in a password recovery session after clicking the email link
+        return from(
+            this._supabaseService.getSupabase.auth.updateUser({ password })
+        );
     }
 
     /**

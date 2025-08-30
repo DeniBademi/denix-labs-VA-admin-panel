@@ -33,7 +33,6 @@ import { Subject, takeUntil } from 'rxjs';
         UserComponent,
         MatIconModule,
         MatButtonModule,
-        LanguagesComponent,
         FuseFullscreenComponent,
         SearchComponent,
         // ShortcutsComponent,
