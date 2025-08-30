@@ -1,0 +1,57 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <div formGroupName="personality" class="flex flex-col space-y-4">
+            <!-- Name -->
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'name'"
+                    [placeholder]="'Enter agent name'"
+                >
+            </mat-form-field>
+
+            <!-- Role -->
+            <mat-form-field>
+                <mat-label>Role</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'role'"
+                    [placeholder]="'Enter agent role'"
+                >
+            </mat-form-field>
+
+            <!-- Background -->
+            <mat-form-field>
+                <mat-label>Background</mat-label>
+                <textarea
+                    matInput
+                    [formControlName]="'background'"
+                    [placeholder]="'Enter agent background'"
+                    [rows]="3"
+                ></textarea>
+            </mat-form-field>
+
+            <!-- Traits -->
+            <mat-form-field>
+                <mat-label>Traits</mat-label>
+                <mat-chip-grid #traitChipGrid [formControlName]="'traits'">
+                    <mat-chip-row
+                        *ngFor="let trait of parentForm.get('personality.traits').value"
+                        [removable]="true"
+                        (removed)="removeTrait(trait)"
+                    >
+                        {{trait}}
+                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    </mat-chip-row>
+                </mat-chip-grid>
+                <input
+                    [matChipInputFor]="traitChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTrait($event)"
+                    [placeholder]="'Add trait...'"
+                >
+            </mat-form-field>
+        </div>
+    </div>
+</div>

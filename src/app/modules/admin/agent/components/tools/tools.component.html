@@ -1,0 +1,110 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <div class="prose prose-sm mb-6">
+            <p>
+                Configure external capabilities and tools that the agent can access to enhance its functionality.
+            </p>
+        </div>
+
+        <!-- Tools -->
+        <mat-form-field class="w-full">
+            <mat-label>Tools</mat-label>
+            <mat-chip-grid #toolChipGrid [formControlName]="'tools'">
+                <mat-chip-row
+                    *ngFor="let tool of parentForm.get('tools').value"
+                    [removable]="true"
+                    (removed)="removeTool(tool)"
+                    [color]="getToolColor(tool)"
+                >
+                    <mat-icon
+                        class="mr-2 icon-size-4"
+                        [svgIcon]="getToolIcon(tool)"
+                    ></mat-icon>
+                    {{tool}}
+                    <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </mat-chip-row>
+            </mat-chip-grid>
+            <input
+                [matChipInputFor]="toolChipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addTool($event)"
+                [placeholder]="'Add tool...'"
+            >
+            <mat-hint>Examples: "Product catalog search", "Size guide", "Stock availability check"</mat-hint>
+        </mat-form-field>
+
+        <!-- Available Tools -->
+        <div class="mt-8 rounded-lg border border-gray-300 p-4">
+            <div class="font-medium mb-4">Available Tools</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Product Tools -->
+                <div class="rounded-lg bg-gray-100 p-4">
+                    <div class="font-medium mb-2 flex items-center">
+                        <mat-icon
+                            class="mr-2 icon-size-5"
+                            [svgIcon]="'heroicons_outline:shopping-bag'"
+                        ></mat-icon>
+                        Product Tools
+                    </div>
+                    <ul class="list-disc ml-6 text-sm space-y-1">
+                        <li>Product catalog search</li>
+                        <li>Size guide</li>
+                        <li>Stock availability check</li>
+                        <li>Price comparison</li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service Tools -->
+                <div class="rounded-lg bg-gray-100 p-4">
+                    <div class="font-medium mb-2 flex items-center">
+                        <mat-icon
+                            class="mr-2 icon-size-5"
+                            [svgIcon]="'heroicons_outline:user-group'"
+                        ></mat-icon>
+                        Customer Service Tools
+                    </div>
+                    <ul class="list-disc ml-6 text-sm space-y-1">
+                        <li>Order tracking</li>
+                        <li>Return initiation</li>
+                        <li>Customer history lookup</li>
+                        <li>Feedback collection</li>
+                    </ul>
+                </div>
+
+                <!-- Marketing Tools -->
+                <div class="rounded-lg bg-gray-100 p-4">
+                    <div class="font-medium mb-2 flex items-center">
+                        <mat-icon
+                            class="mr-2 icon-size-5"
+                            [svgIcon]="'heroicons_outline:megaphone'"
+                        ></mat-icon>
+                        Marketing Tools
+                    </div>
+                    <ul class="list-disc ml-6 text-sm space-y-1">
+                        <li>Promotion finder</li>
+                        <li>Similar products recommendation</li>
+                        <li>Cross-sell suggestions</li>
+                        <li>Campaign information</li>
+                    </ul>
+                </div>
+
+                <!-- Support Tools -->
+                <div class="rounded-lg bg-gray-100 p-4">
+                    <div class="font-medium mb-2 flex items-center">
+                        <mat-icon
+                            class="mr-2 icon-size-5"
+                            [svgIcon]="'heroicons_outline:lifebuoy'"
+                        ></mat-icon>
+                        Support Tools
+                    </div>
+                    <ul class="list-disc ml-6 text-sm space-y-1">
+                        <li>FAQ lookup</li>
+                        <li>Store locator</li>
+                        <li>Contact information</li>
+                        <li>Support ticket creation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <div formGroupName="tone" class="flex flex-col space-y-4">
+            <!-- Style -->
+            <mat-form-field>
+                <mat-label>Style</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'style'"
+                    [placeholder]="'Enter tone style'"
+                >
+            </mat-form-field>
+
+            <!-- Patterns -->
+            <mat-form-field>
+                <mat-label>Speech Patterns</mat-label>
+                <mat-chip-grid #patternChipGrid [formControlName]="'patterns'">
+                    <mat-chip-row
+                        *ngFor="let pattern of parentForm.get('tone.patterns').value"
+                        [removable]="true"
+                        (removed)="removePattern(pattern)"
+                    >
+                        {{pattern}}
+                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    </mat-chip-row>
+                </mat-chip-grid>
+                <input
+                    [matChipInputFor]="patternChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addPattern($event)"
+                    [placeholder]="'Add speech pattern...'"
+                >
+                <mat-hint>Press Enter or comma to add pattern</mat-hint>
+            </mat-form-field>
+
+            <!-- Elements -->
+            <mat-form-field>
+                <mat-label>Conversational Elements</mat-label>
+                <mat-chip-grid #elementChipGrid [formControlName]="'elements'">
+                    <mat-chip-row
+                        *ngFor="let element of parentForm.get('tone.elements').value"
+                        [removable]="true"
+                        (removed)="removeElement(element)"
+                    >
+                        {{element}}
+                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                    </mat-chip-row>
+                </mat-chip-grid>
+                <input
+                    [matChipInputFor]="elementChipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addElement($event)"
+                    [placeholder]="'Add conversational element...'"
+                >
+                <mat-hint>Press Enter or comma to add element</mat-hint>
+            </mat-form-field>
+        </div>
+    </div>
+</div>

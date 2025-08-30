@@ -1,0 +1,51 @@
+/* @font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Regular';
+    src: url('../../public/fonts/inter/Inter-roman.var.woff2?v=3.18')
+        format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: italic;
+    font-named-instance: 'Italic';
+    src: url('../../public/fonts/inter/Inter-italic.var.woff2?v=3.18')
+        format('woff2');
+} */
+
+@font-face {
+    font-family: 'jakarta';
+    font-display: swap;
+    font-named-instance: 'Regular';
+    src: url("../../public/fonts/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'jakarta-i';
+    font-display: swap;
+    font-named-instance: 'Italic';
+    src: url("../../public/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Italic-VariableFont_wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'jakarta-i-static';
+    font-display: swap;
+    src: url("../../public/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-MediumItalic.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'nunito';
+    font-display: swap;
+    src: url("../../public/fonts/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'nunito-i';
+    font-display: swap;
+    src: url("../../public/fonts/Nunito_Sans/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf") format("opentype");
+}

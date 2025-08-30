@@ -1,0 +1,43 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <div class="prose prose-sm mb-6">
+            <p>
+                Define boundaries and limitations for the agent's behavior to ensure appropriate and ethical interactions.
+            </p>
+        </div>
+
+        <!-- Guardrails -->
+        <mat-form-field class="w-full">
+            <mat-label>Guardrails</mat-label>
+            <mat-chip-grid #guardrailChipGrid [formControlName]="'guardrails'">
+                <mat-chip-row
+                    *ngFor="let guardrail of parentForm.get('guardrails').value"
+                    [removable]="true"
+                    (removed)="removeGuardrail(guardrail)"
+                >
+                    {{guardrail}}
+                    <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </mat-chip-row>
+            </mat-chip-grid>
+            <input
+                [matChipInputFor]="guardrailChipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addGuardrail($event)"
+                [placeholder]="'Add guardrail...'"
+            >
+            <mat-hint>Examples: "Never make medical claims", "Stay within product specifications", "Maintain professional boundaries"</mat-hint>
+        </mat-form-field>
+
+        <!-- Tips -->
+        <div class="mt-8 rounded-lg border border-gray-300 p-4">
+            <div class="font-medium mb-2">Tips for effective guardrails:</div>
+            <ul class="list-disc ml-4 text-sm space-y-1">
+                <li>Be specific and clear about what the agent should not do</li>
+                <li>Focus on ethical and professional boundaries</li>
+                <li>Include data privacy and security considerations</li>
+                <li>Consider regulatory compliance requirements</li>
+                <li>Define limits of expertise and authority</li>
+            </ul>
+        </div>
+    </div>
+</div>

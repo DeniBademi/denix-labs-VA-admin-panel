@@ -1,0 +1,201 @@
+<div class="flex flex-col flex-auto min-h-0">
+    <!-- Dialog header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-gray-100 border-b">
+        <div class="text-lg font-medium tracking-tight">
+            Import Products from File
+        </div>
+        <button
+            mat-icon-button
+            [matDialogClose]="undefined">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Dialog content -->
+    <div class="flex-auto overflow-y-auto p-6 sm:p-8">
+        <mat-stepper linear #stepper>
+            <!-- Step 1: Upload file -->
+            <mat-step>
+                <ng-template matStepLabel>Upload File</ng-template>
+
+                                <div class="relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg">
+                    <mat-icon
+                        class="icon-size-24"
+                        [svgIcon]="'heroicons_outline:arrow-up-tray'">
+                    </mat-icon>
+
+                    <div class="mt-4 text-lg font-medium">Choose a CSV/XLSX file or drag it here</div>
+
+                    <input
+                        type="file"
+                        accept=".csv,.xls,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                        class="absolute inset-0 opacity-0 cursor-pointer"
+                        (change)="onFileSelected($event)">
+                </div>
+
+                <div *ngIf="file" class="mt-4">
+                    <div class="flex items-center gap-2">
+                        <mat-icon
+                            class="icon-size-5 text-green-600"
+                            [svgIcon]="'heroicons_mini:check-circle'">
+                        </mat-icon>
+                        <span>{{ file.name }}</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end mt-8">
+                    <button
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="!file"
+                        matStepperNext>
+                        Next
+                    </button>
+                </div>
+            </mat-step>
+
+            <!-- Step 2: Map columns -->
+            <mat-step [stepControl]="mappingForm">
+                <ng-template matStepLabel>Map Columns</ng-template>
+
+                <form [formGroup]="mappingForm">
+                    <!-- Required fields -->
+                    <div class="text-lg font-medium mb-4">Required Fields</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <mat-form-field *ngFor="let field of requiredFields; trackBy: trackByFn">
+                            <mat-label>{{ field.label }}</mat-label>
+                            <mat-select [formControlName]="field.key">
+                                <mat-option [value]="''">Select column</mat-option>
+                                <mat-option
+                                    *ngFor="let header of csvHeaders; let i = index"
+                                    [value]="header">
+                                    {{ header }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="mappingForm.get(field.key).hasError('required')">
+                                Please map this field
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Optional fields -->
+                    <div class="text-lg font-medium mt-8 mb-4">Optional Fields</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <mat-form-field *ngFor="let field of optionalFields; trackBy: trackByFn">
+                            <mat-label>{{ field.label }}</mat-label>
+                            <mat-select [formControlName]="field.key">
+                                <mat-option [value]="''">Select column</mat-option>
+                                <mat-option
+                                    *ngFor="let header of csvHeaders; let i = index"
+                                    [value]="header">
+                                    {{ header }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="mt-8">
+                        <div class="text-lg font-medium mb-4">Preview</div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            *ngFor="let header of csvHeaders; trackBy: trackByFn"
+                                            class="px-4 py-2 bg-gray-100 border-b text-left">
+                                            {{ header }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let row of previewData; trackBy: trackByFn">
+                                        <td
+                                            *ngFor="let cell of row; trackBy: trackByFn"
+                                            class="px-4 py-2 border-b">
+                                            {{ truncateCell(cell) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="flex justify-end gap-2 mt-8">
+                    <button
+                        mat-button
+                        matStepperPrevious>
+                        Back
+                    </button>
+                    <button
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="mappingForm.invalid"
+                        matStepperNext>
+                        Next
+                    </button>
+                </div>
+            </mat-step>
+
+            <!-- Step 3: Import -->
+            <mat-step>
+                <ng-template matStepLabel>Import</ng-template>
+
+                <div class="text-center py-8">
+                    <ng-container *ngIf="!importing && !importError">
+                        <mat-icon
+                            class="icon-size-24"
+                            [svgIcon]="'heroicons_outline:cloud-arrow-up'">
+                        </mat-icon>
+
+                        <div class="mt-4 text-lg font-medium">Ready to Import</div>
+                        <div class="mt-2 text-secondary">
+                            Click the Import button below to start importing your products
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="importing">
+                        <mat-progress-spinner
+                            [mode]="'indeterminate'"
+                            [diameter]="48">
+                        </mat-progress-spinner>
+
+                        <div class="mt-4 text-lg font-medium">Importing Products</div>
+                        <div class="mt-2 text-secondary">
+                            Please wait while we import your products...
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="importError">
+                        <mat-icon
+                            class="icon-size-24 text-warn"
+                            [svgIcon]="'heroicons_outline:exclamation-circle'">
+                        </mat-icon>
+
+                        <div class="mt-4 text-lg font-medium text-warn">Import Failed</div>
+                        <div class="mt-2 text-secondary">
+                            {{ importError }}
+                        </div>
+                    </ng-container>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button
+                        mat-button
+                        matStepperPrevious
+                        [disabled]="importing">
+                        Back
+                    </button>
+                    <button
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="importing"
+                        (click)="importCSV()">
+                        Import
+                    </button>
+                </div>
+            </mat-step>
+        </mat-stepper>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="mt-8" [formGroup]="parentForm">
+    <!-- Add disclaimer button -->
+    <div class="flex justify-end mb-6">
+        <button
+            mat-flat-button
+            [color]="'primary'"
+            (click)="addDisclaimer()"
+        >
+            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+            <span class="ml-2">Add Disclaimer</span>
+        </button>
+    </div>
+
+    <!-- Disclaimers list -->
+    <div formArrayName="disclaimers">
+        <div
+            *ngFor="let disclaimer of disclaimers.controls; let i = index; trackBy: trackByFn"
+            [formGroupName]="i"
+            class="flex flex-col p-6 mb-4 bg-card rounded-2xl shadow"
+        >
+            <!-- Disclaimer header -->
+            <div class="flex items-center justify-between">
+                <div class="text-lg font-medium">Disclaimer {{i + 1}}</div>
+                <button
+                    mat-icon-button
+                    [matTooltip]="'Delete'"
+                    (click)="removeDisclaimer(i)"
+                >
+                    <mat-icon
+                        class="text-red-500"
+                        [svgIcon]="'heroicons_outline:trash'"
+                    ></mat-icon>
+                </button>
+            </div>
+
+            <!-- Disclaimer text -->
+            <mat-form-field class="mt-4">
+                <mat-label>Text</mat-label>
+                <textarea
+                    matInput
+                    formControlName="text"
+                    [placeholder]="'Enter disclaimer text'"
+                    [rows]="3"
+                ></textarea>
+            </mat-form-field>
+
+            <!-- Require permission -->
+            <mat-checkbox
+                formControlName="requirePermission"
+                [color]="'primary'"
+                class="mt-2"
+            >
+                Require explicit permission from user
+            </mat-checkbox>
+        </div>
+    </div>
+</div>

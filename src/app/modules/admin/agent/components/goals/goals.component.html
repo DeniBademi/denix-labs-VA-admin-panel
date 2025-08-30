@@ -1,0 +1,25 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <!-- Goals -->
+        <mat-form-field class="w-full">
+            <mat-label>Goals</mat-label>
+            <mat-chip-grid #goalChipGrid [formControlName]="'goals'">
+                <mat-chip-row
+                    *ngFor="let goal of parentForm.get('goals').value"
+                    [removable]="true"
+                    (removed)="removeGoal(goal)"
+                >
+                    {{goal}}
+                    <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </mat-chip-row>
+            </mat-chip-grid>
+            <input
+                [matChipInputFor]="goalChipGrid"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addGoal($event)"
+                [placeholder]="'Add goal...'"
+            >
+            <mat-hint>Press Enter or comma to add goal</mat-hint>
+        </mat-form-field>
+    </div>
+</div>

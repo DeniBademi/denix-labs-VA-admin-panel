@@ -1,0 +1,32 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+
+    .mat-mdc-dialog-content {
+        max-height: unset;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    ::ng-deep {
+        .mat-horizontal-stepper-header-container {
+            margin-bottom: 24px;
+        }
+
+        .mat-horizontal-content-container {
+            padding: 0 !important;
+        }
+
+        .mat-mdc-form-field {
+            width: 100%;
+        }
+
+        .mat-mdc-form-field-subscript-wrapper,
+        .mat-mdc-form-field-hint-wrapper,
+        .mat-mdc-select-panel {
+            z-index: 40 !important;
+        }
+    }
+}

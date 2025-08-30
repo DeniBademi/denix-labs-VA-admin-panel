@@ -1,0 +1,71 @@
+<div class="w-[500px] p-8">
+    <div class="text-2xl font-semibold mb-8">
+        {{data.user ? 'Edit User' : 'Add User'}}
+    </div>
+
+    <form [formGroup]="userForm">
+        <!-- Name -->
+        <mat-form-field class="w-full mb-4">
+            <mat-label>Name</mat-label>
+            <input
+                matInput
+                [formControlName]="'name'"
+                [placeholder]="'John Doe'"
+            >
+            <mat-error *ngIf="userForm.get('name').hasError('required')">
+                Name is required
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Email -->
+        <mat-form-field class="w-full mb-4">
+            <mat-label>Email</mat-label>
+            <input
+                matInput
+                [formControlName]="'email'"
+                [placeholder]="'johndoe@example.com'"
+            >
+            <mat-error *ngIf="userForm.get('email').hasError('required')">
+                Email is required
+            </mat-error>
+            <mat-error *ngIf="userForm.get('email').hasError('email')">
+                Please enter a valid email address
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Role -->
+        <mat-form-field class="w-full">
+            <mat-label>Role</mat-label>
+            <mat-select [formControlName]="'role'">
+                <mat-option
+                    *ngFor="let role of roles"
+                    [value]="role.id"
+                >
+                    {{role.name}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="userForm.get('role').hasError('required')">
+                Role is required
+            </mat-error>
+        </mat-form-field>
+    </form>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end mt-8">
+        <button
+            mat-button
+            [matDialogClose]="undefined"
+        >
+            Cancel
+        </button>
+        <button
+            class="ml-2"
+            mat-flat-button
+            [color]="'primary'"
+            [disabled]="userForm.invalid"
+            (click)="saveAndClose()"
+        >
+            Save
+        </button>
+    </div>
+</div>

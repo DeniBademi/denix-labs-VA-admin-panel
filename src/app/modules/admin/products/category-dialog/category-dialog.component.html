@@ -1,0 +1,118 @@
+<div class="flex flex-col flex-auto min-h-0">
+    <!-- Dialog header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-gray-100 border-b">
+        <div class="text-lg font-medium tracking-tight">
+            Manage Categories
+        </div>
+        <button
+            mat-icon-button
+            [matDialogClose]="undefined">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Dialog content -->
+    <div class="flex flex-auto p-6 sm:p-8">
+        <!-- Category tree -->
+        <div class="w-1/2 pr-4 border-r">
+            <div class="text-lg font-medium mb-4">Category Tree</div>
+
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+                <!-- Tree node template -->
+                <mat-nested-tree-node *matTreeNodeDef="let node">
+                    <div class="mat-tree-node">
+                        <button
+                            mat-icon-button
+                            [attr.aria-label]="'Toggle ' + node.name"
+                            (click)="treeControl.toggle(node)">
+                            <mat-icon class="mat-icon-rtl-mirror">
+                                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                            </mat-icon>
+                        </button>
+                        <span class="flex-auto">{{ node.name }}</span>
+                        <button
+                            mat-icon-button
+                            [color]="'primary'"
+                            (click)="selectCategory(node)">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                        <button
+                            mat-icon-button
+                            [color]="'warn'"
+                            (click)="deleteCategory(node)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                    <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                    </div>
+                </mat-nested-tree-node>
+            </mat-tree>
+
+            <!-- Empty state -->
+            <div
+                *ngIf="!dataSource.data?.length"
+                class="p-8 text-center border-2 border-dashed rounded-lg">
+                <mat-icon
+                    class="icon-size-24"
+                    [svgIcon]="'heroicons_outline:folder-open'">
+                </mat-icon>
+                <div class="mt-4 text-lg font-medium">No Categories</div>
+                <div class="mt-2 text-secondary">
+                    Start by adding your first category
+                </div>
+            </div>
+        </div>
+
+        <!-- Category form -->
+        <div class="w-1/2 pl-4">
+            <div class="text-lg font-medium mb-4">
+                {{ editMode ? 'Edit Category' : 'Add New Category' }}
+            </div>
+
+            <form [formGroup]="categoryForm">
+                <!-- Name -->
+                <mat-form-field class="w-full">
+                    <mat-label>Name</mat-label>
+                    <input
+                        matInput
+                        [formControlName]="'name'"
+                        [placeholder]="'Enter category name'">
+                    <mat-error *ngIf="categoryForm.get('name').hasError('required')">
+                        Name is required
+                    </mat-error>
+                </mat-form-field>
+
+                <!-- Parent category -->
+                <mat-form-field class="w-full mt-4">
+                    <mat-label>Parent Category (Optional)</mat-label>
+                    <mat-select [formControlName]="'parentId'">
+                        <mat-option [value]="''">None</mat-option>
+                        <mat-option
+                            *ngFor="let category of getParentCategories(); trackBy: trackByFn"
+                            [value]="category.id">
+                            {{ category.path }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-2 mt-8">
+                    <button
+                        *ngIf="editMode"
+                        mat-button
+                        (click)="cancelEdit()">
+                        Cancel
+                    </button>
+                    <button
+                        mat-flat-button
+                        [color]="'primary'"
+                        [disabled]="categoryForm.invalid"
+                        (click)="saveCategory()">
+                        {{ editMode ? 'Update' : 'Add' }} Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

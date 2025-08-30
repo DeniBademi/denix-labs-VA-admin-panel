@@ -1,0 +1,81 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="flex">
+            <!-- Configuration Section -->
+            <div class="flex-auto max-w-3xl">
+                <div>
+                    <div class="text-3xl font-semibold tracking-tight leading-8">Agent Configuration</div>
+                    <div class="font-medium tracking-tight text-secondary">Configure your virtual sales consultant's behavior, personality, and capabilities.</div>
+                </div>
+
+                <form [formGroup]="configForm" class="mt-8">
+                    <!-- Tabs -->
+                    <mat-tab-group>
+                        <mat-tab label="Disclaimers">
+                            <app-disclaimers [parentForm]="configForm"></app-disclaimers>
+                        </mat-tab>
+
+                        <mat-tab label="Personality">
+                            <app-personality [parentForm]="configForm"></app-personality>
+                        </mat-tab>
+
+                        <mat-tab label="Tone">
+                            <app-tone [parentForm]="configForm"></app-tone>
+                        </mat-tab>
+
+                        <mat-tab label="Goals">
+                            <app-goals [parentForm]="configForm"></app-goals>
+                        </mat-tab>
+
+                        <mat-tab label="Guardrails">
+                            <app-guardrails [parentForm]="configForm"></app-guardrails>
+                        </mat-tab>
+
+                        <!-- <mat-tab label="Tools">
+                            <app-tools [parentForm]="configForm"></app-tools>
+                        </mat-tab> -->
+
+                        <mat-tab label="Knowledge Base">
+                            <app-knowledge-base [parentForm]="configForm"></app-knowledge-base>
+                        </mat-tab>
+                    </mat-tab-group>
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-end mt-8">
+                        <button
+                            mat-flat-button
+                            [color]="'primary'"
+                            [disabled]="configForm.invalid"
+                            (click)="saveConfig()"
+                        >
+                            <mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                            <span class="ml-2">Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Test Panel -->
+            <div class="ml-8 w-96">
+                <div class="sticky top-6">
+                    <div class="bg-card rounded-2xl shadow p-6">
+                        <div class="text-lg font-medium mb-4">Test the Assistant</div>
+                        <p class="text-secondary text-sm mb-6">
+                            Try out your configured assistant in a simulated chat environment to ensure it behaves as expected.
+                        </p>
+                        <button
+                            mat-flat-button
+                            [color]="'primary'"
+                            class="w-full"
+                            (click)="testAssistant()"
+                        >
+                            <mat-icon [svgIcon]="'heroicons_outline:chat-bubble-left-right'"></mat-icon>
+                            <span class="ml-2">Start Test Chat</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
