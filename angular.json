@@ -54,7 +54,9 @@
                             "src/styles/styles.scss",
                             "src/styles/tailwind.scss"
                         ],
-                        "scripts": []
+                        "scripts": [
+                            "public/js/particles.min.js"
+                        ]
                     },
                     "configurations": {
                         "production": {

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ViewEncapsulation, PLATFORM_ID } from '@angular/core';
 import {
     FormsModule,
     NgForm,
@@ -7,6 +7,7 @@ import {
     UntypedFormGroup,
     Validators,
 } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +18,9 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+
+declare var particlesJS: any;
+
 
 @Component({
     selector: 'auth-sign-in',
@@ -45,6 +49,7 @@ export class AuthSignInComponent implements OnInit {
     };
     signInForm: UntypedFormGroup;
     showAlert: boolean = false;
+    private readonly platform_id = inject(PLATFORM_ID);
 
     /**
      * Constructor
@@ -73,6 +78,10 @@ export class AuthSignInComponent implements OnInit {
             password: ['', Validators.required],
             rememberMe: [''],
         });
+
+        if (isPlatformBrowser(this.platform_id)) {
+            particlesJS.load('particles-js', '/js/particlesjs-config.json', null);
+          }
     }
 
     // -----------------------------------------------------------------------------------------------------

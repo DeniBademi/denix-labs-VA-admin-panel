@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
     FormsModule,
     NgForm,
@@ -16,6 +17,8 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
 import { finalize } from 'rxjs';
+
+declare var particlesJS: any;
 
 @Component({
     selector: 'auth-forgot-password',
@@ -42,7 +45,7 @@ export class AuthForgotPasswordComponent implements OnInit {
     };
     forgotPasswordForm: UntypedFormGroup;
     showAlert: boolean = false;
-
+    private readonly platform_id = inject(PLATFORM_ID);
     /**
      * Constructor
      */
@@ -63,6 +66,10 @@ export class AuthForgotPasswordComponent implements OnInit {
         this.forgotPasswordForm = this._formBuilder.group({
             email: ['', [Validators.required, Validators.email]],
         });
+
+        if (isPlatformBrowser(this.platform_id)) {
+            particlesJS.load('particles-js', '/js/particlesjs-config.json', null);
+          }
     }
 
     // -----------------------------------------------------------------------------------------------------

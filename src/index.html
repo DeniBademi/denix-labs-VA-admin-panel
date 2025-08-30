@@ -49,5 +49,15 @@
 
         <!-- App root -->
         <app-root></app-root>
+
+        <script>
+            // Load particles after page load to avoid blocking LCP
+            window.addEventListener('load', function() {
+              const script = document.createElement('script');
+              script.src = '/js/particles.min.js';
+              script.defer = true;
+              document.head.appendChild(script);
+            });
+          </script>
     </body>
 </html>

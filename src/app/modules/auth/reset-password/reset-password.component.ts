@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
     FormsModule,
     NgForm,
@@ -18,6 +19,8 @@ import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { FuseValidators } from '@fuse/validators';
 import { AuthService } from 'app/core/auth/auth.service';
 import { finalize } from 'rxjs';
+
+declare var particlesJS: any;
 
 @Component({
     selector: 'auth-reset-password',
@@ -45,7 +48,7 @@ export class AuthResetPasswordComponent implements OnInit {
     };
     resetPasswordForm: UntypedFormGroup;
     showAlert: boolean = false;
-
+    private readonly platform_id = inject(PLATFORM_ID);
     /**
      * Constructor
      */
@@ -75,6 +78,10 @@ export class AuthResetPasswordComponent implements OnInit {
                 ),
             }
         );
+
+        if (isPlatformBrowser(this.platform_id)) {
+            particlesJS.load('particles-js', '/js/particlesjs-config.json', null);
+          }
     }
 
     // -----------------------------------------------------------------------------------------------------

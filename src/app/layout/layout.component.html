@@ -66,4 +66,6 @@
 <!-- ----------------------------------------------------------------------------------------------------- -->
 <!-- Settings drawer - Remove this to remove the drawer and its button -->
 <!-- ----------------------------------------------------------------------------------------------------- -->
-<settings></settings>
+<ng-container *ngIf="layout !== 'empty'">
+    <settings></settings>
+</ng-container>
