@@ -13,7 +13,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
         id: 'agent',
         title: 'Agent Configuration',
         type: 'basic',
-        icon: 'heroicons_outline:user-circle',
+        icon: 'heroicons_outline:cog-8-tooth',
         link: '/agent',
     },
     {
