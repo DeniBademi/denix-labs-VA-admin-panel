@@ -333,7 +333,7 @@ export class QrCodesComponent implements OnInit {
             cornerSquareType: 'square' as CornerSquareType,
             cornerSquareColor: '#000000FF',
             cornerDotColorType: 'single',
-            cornerDotType: 'dot' as CornerDotType,
+            cornerDotType: 'square' as CornerDotType,
             cornerDotColor: '#000000FF',
             backgroundColor: '#ffffff',
             showLogo: false,
