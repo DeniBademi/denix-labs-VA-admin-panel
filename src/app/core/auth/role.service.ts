@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Permission } from 'app/core/user/user.types';
 import { Role } from 'app/core/user/user.service';
 import { SupabaseService } from '../supabase/supabase.service';
-
 @Injectable({ providedIn: 'root' })
 export class RoleService {
     private _roles$ = new BehaviorSubject<Role[]>([]);
@@ -122,5 +121,113 @@ export class RoleService {
         const groups = this.getPermissionGroups();
         return Object.entries(groups)
             .find(([_, permissions]) => permissions.includes(permission))?.[0] || '';
+    }
+
+    /**
+     * Force reload roles and permissions from database
+     */
+    async refreshRoles(): Promise<void> {
+        await this._loadFromDatabase();
+    }
+
+    /**
+     * Create a new role and its permissions
+     */
+    async createRole(role: Partial<Role>): Promise<Role> {
+        const supabase = this._supabase.getSupabase;
+
+        // Insert role (key = UI id)
+        const { data: inserted, error: insertErr } = await supabase
+            .from('roles')
+            .insert({ key: role.id, name: role.name })
+            .select('id, key, name')
+            .single();
+        if (insertErr) throw insertErr;
+
+        const roleId = inserted.id as string;
+
+        // Insert permissions if provided
+        const permissions = (role.permissions ?? []) as Permission[];
+        if (permissions.length > 0) {
+            const rows = permissions.map((permission_key) => ({ role_id: roleId, permission_key }));
+            const { error: permsErr } = await supabase
+                .from('role_permissions')
+                .insert(rows);
+            if (permsErr) throw permsErr;
+        }
+
+        // Update local cache
+        const created: Role = { id: role.id as string, name: role.name as string, permissions: permissions };
+        this._roles$.next([...(this._roles$.value ?? []), created]);
+        return created;
+    }
+
+    /**
+     * Update an existing role identified by its current key (oldKey)
+     */
+    async updateRole(oldKey: string, role: Partial<Role>): Promise<Role> {
+        const supabase = this._supabase.getSupabase;
+
+        // Resolve role id by key
+        const { data: existingRole, error: fetchErr } = await supabase
+            .from('roles')
+            .select('id')
+            .eq('key', oldKey)
+            .maybeSingle();
+        if (fetchErr) throw fetchErr;
+        if (!existingRole) throw new Error('Role not found');
+
+        const roleId = existingRole.id as string;
+
+        // Update role fields
+        const { error: updateErr } = await supabase
+            .from('roles')
+            .update({ key: role.id, name: role.name })
+            .eq('id', roleId);
+        if (updateErr) throw updateErr;
+
+        // Replace permissions
+        const { error: delErr } = await supabase
+            .from('role_permissions')
+            .delete()
+            .eq('role_id', roleId);
+        if (delErr) throw delErr;
+
+        const permissions = (role.permissions ?? []) as Permission[];
+        if (permissions.length > 0) {
+            const rows = permissions.map((permission_key) => ({ role_id: roleId, permission_key }));
+            const { error: insErr } = await supabase
+                .from('role_permissions')
+                .insert(rows);
+            if (insErr) throw insErr;
+        }
+
+        // Update local cache
+        const updated: Role = { id: role.id as string, name: role.name as string, permissions };
+        const current = this._roles$.value ?? [];
+        const idx = current.findIndex(r => r.id === oldKey);
+        if (idx > -1) {
+            current[idx] = updated;
+            this._roles$.next([...current]);
+        } else {
+            this._roles$.next([updated, ...current]);
+        }
+        return updated;
+    }
+
+    /**
+     * Delete a role by key
+     */
+    async deleteRole(key: string): Promise<void> {
+        const supabase = this._supabase.getSupabase;
+        const { error } = await supabase
+            .from('roles')
+            .delete()
+            .eq('key', key);
+        if (error) throw error;
+
+        // Update local cache
+        const current = this._roles$.value ?? [];
+        this._roles$.next(current.filter(r => r.id !== key));
     }
 }

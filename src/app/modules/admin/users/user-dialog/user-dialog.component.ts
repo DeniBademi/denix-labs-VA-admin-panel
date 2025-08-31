@@ -8,12 +8,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { User } from 'app/core/user/user.types';
 import { Role } from 'app/core/user/user.service';
 import { RoleService } from 'app/core/auth/role.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'user-dialog',
     templateUrl: './user-dialog.component.html',
     standalone: true,
     imports: [
+        CommonModule,
         MatDialogModule,
         MatButtonModule,
         MatFormFieldModule,

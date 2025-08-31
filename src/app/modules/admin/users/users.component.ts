@@ -130,12 +130,12 @@ export class UsersComponent implements OnInit, OnDestroy {
             data: { role }
         });
 
-        dialogRef.afterClosed().subscribe((result: Role) => {
+        dialogRef.afterClosed().subscribe(async (result: Role) => {
             if (result) {
                 if (role) {
-                    this._userService.updateRole(role.id, result).subscribe();
+                    await this._roleService.updateRole(role.id, result);
                 } else {
-                    this._userService.createRole(result).subscribe();
+                    await this._roleService.createRole(result);
                 }
             }
         });
@@ -164,26 +164,29 @@ export class UsersComponent implements OnInit, OnDestroy {
             data: { user }
         });
 
-        dialogRef.afterClosed().subscribe((payload: Partial<User>) => {
+
+        dialogRef.afterClosed().subscribe(async (payload: Partial<User>) => {
             if (payload) {
-                // Hook up to UserService when backend endpoints are ready.
-                // For now, add/update locally.
-                if (user) {
-                    const idx = this.users.findIndex(u => u.id === user.id);
-                    if (idx > -1) {
-                        this.users[idx] = { ...this.users[idx], ...payload } as User;
-                        this.users = [...this.users];
+                try {
+                    console.log('user', user);
+                    if (user) {
+                        // Update existing user
+                        await this._userService.updateUser(user.id, payload);
+                    } else {
+                        // Create new user (invite)
+                        if (!payload.email) {
+                            console.error('Email is required for new users');
+                            return;
+                        }
+                        await this._userService.createUser({
+                            email: payload.email,
+                            name: payload.name,
+                            role: (payload as any).role || 'user'
+                        });
                     }
-                } else {
-                    const newUser: User = {
-                        id: crypto.randomUUID(),
-                        name: payload.name,
-                        email: payload.email,
-                        avatar: '',
-                        role: (payload as any).role,
-                        permissions: []
-                    } as User;
-                    this.users = [newUser, ...this.users];
+                } catch (error) {
+                    console.error('Failed to save user:', error);
+                    // TODO: Show error toast/snackbar
                 }
             }
         });
@@ -203,9 +206,35 @@ export class UsersComponent implements OnInit, OnDestroy {
             }
         });
 
-        confirmation.afterClosed().subscribe((result) => {
+        confirmation.afterClosed().subscribe(async (result) => {
             if (result === 'confirmed') {
-                this._userService.deleteRole(role.id).subscribe();
+                await this._roleService.deleteRole(role.id);
+            }
+        });
+    }
+
+    /**
+     * Delete user
+     */
+    deleteUser(user: User): void {
+        const confirmation = this._fuseConfirmationService.open({
+            title: 'Remove User',
+            message: `Are you sure you want to remove "${user.name}" from this workspace?`,
+            actions: {
+                confirm: {
+                    label: 'Remove'
+                }
+            }
+        });
+
+        confirmation.afterClosed().subscribe(async (result) => {
+            if (result === 'confirmed') {
+                try {
+                    await this._userService.deleteUser(user.id);
+                } catch (error) {
+                    console.error('Failed to delete user:', error);
+                    // TODO: Show error toast/snackbar
+                }
             }
         });
     }
