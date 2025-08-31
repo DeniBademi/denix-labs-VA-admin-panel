@@ -13,7 +13,7 @@ export function createQrForm(fb: FormBuilder): FormGroup {
     // General
     size: [300],
     backgroundColorType: ['single'],
-    backgroundShape: [1],
+    backgroundShape: [0],
     backgroundColor: ['#ffffff'],
     backgroundGradient: fb.group({
       type: ['linear'],

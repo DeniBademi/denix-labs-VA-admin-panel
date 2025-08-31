@@ -101,15 +101,9 @@ export class QrCodesComponent implements OnInit {
     }
 
     private applyConfig(next: Options): void {
+        this.currentConfig = { ...next };
         if (this.preview) {
-            this.preview.update(this.currentConfig, next).subscribe({
-                next: () => {
-                    this.currentConfig = next;
-                },
-                error: (error) => console.error('Failed to update QR code:', error)
-            });
-        } else {
-            this.currentConfig = { ...next };
+            this.preview.update(this.currentConfig, next);
         }
     }
 
