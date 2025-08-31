@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Options, DotType, CornerSquareType, CornerDotType, ShapeType } from 'ngx-qrcode-styling';
+import { Options, DotType, CornerSquareType, CornerDotType, ShapeType, Gradient } from 'ngx-qrcode-styling';
 import { QrAgentUrlComponent } from './components/agent-url/agent-url.component';
 import { QrStylingFormComponent } from './components/styling-form/styling-form.component';
 import { QrPreviewComponent } from './components/preview/preview.component';
@@ -65,6 +65,7 @@ export class QrCodesComponent implements OnInit {
     }
 
     private buildConfigFromForm(): Options {
+
         const v = this.qrForm.value;
 
         const config: Options = {
@@ -95,16 +96,14 @@ export class QrCodesComponent implements OnInit {
             }
         };
 
-        if (v.logoUrl) {
-            if (v.showLogo) {
-                config.image = v.logoUrl;
-                config.imageOptions = {
-                    hideBackgroundDots: v.hideBackgroundDots,
-                    imageSize: v.logoSize,
-                    crossOrigin: "anonymous",
-                    margin: v.logoMargin
-                };
-            }
+        if (v.logoUrl && v.showLogo) {
+            config.image = v.logoUrl;
+            config.imageOptions = {
+                hideBackgroundDots: v.hideBackgroundDots,
+                imageSize: v.logoSize,
+                crossOrigin: "anonymous",
+                margin: v.logoMargin
+            };
         }
 
         return config;
@@ -130,6 +129,4 @@ export class QrCodesComponent implements OnInit {
         this.qrForm.patchValue(defaultFormValues);
         this.applyConfig({ data: this.AGENT_URL, width: 300, height: 300, template: 'default' } as Options);
     }
-
-
 }

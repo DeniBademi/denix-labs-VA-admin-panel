@@ -28,7 +28,7 @@ export function createQrForm(fb: FormBuilder): FormGroup {
     }),
 
     // Error correction
-    errorCorrectionLevel: ['H' as ErrorCorrectionLevel],
+    errorCorrectionLevel: ['Q' as ErrorCorrectionLevel],
 
     // Corners
     cornerSquareType: ['square' as CornerSquareType],
