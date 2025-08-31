@@ -97,7 +97,7 @@ export class QrCodesComponent implements OnInit {
             backgroundColor: ['#ffffff'],
 
             // Visual Styling
-            dotStyle: ['circle' as DotType],
+            dotStyle: ['square' as DotType],
             colorType: ['single'],
                 dotColor: ['#000000FF'],
                 dotGradient: this._formBuilder.group({
