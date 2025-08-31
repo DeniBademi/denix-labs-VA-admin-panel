@@ -102,16 +102,14 @@ export class QrCodesComponent implements OnInit {
 
     private applyConfig(next: Options): void {
         this.currentConfig = { ...next };
-        if (this.preview) {
-            this.preview.update(this.currentConfig, next);
-        }
+        this.preview?.update(this.currentConfig, next);
+        this.qrForm.patchValue(defaultFormValues().value);
     }
 
     /**
      * Reset to basic configuration
      */
     resetToBasic(): void {
-        this.qrForm.patchValue(defaultFormValues);
         this.applyConfig({ data: this.AGENT_URL, width: 300, height: 300, template: 'default' } as Options);
     }
 }

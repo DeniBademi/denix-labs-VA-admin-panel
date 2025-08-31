@@ -13,6 +13,7 @@ import { colorTypes } from '../../config-options/color-types';
 import { errorCorrectionLevels } from '../../config-options/error-correction-levels';
 import { backgroundShapeTypes } from '../../config-options/background-shape-types';
 import { DotType, CornerSquareType, CornerDotType, ShapeType, ErrorCorrectionLevel } from 'ngx-qrcode-styling';
+import { defaultFormValues } from '../../forms/qr-form-factory';
 
 @Component({
     selector: 'app-qr-styling-form',
@@ -32,13 +33,13 @@ import { DotType, CornerSquareType, CornerDotType, ShapeType, ErrorCorrectionLev
 export class QrStylingFormComponent implements OnInit {
 
     @Input() form!: FormGroup;
+    @Output() reset = new EventEmitter<void>();
     dotTypes = dotTypes;
     public cornerSquareTypes = cornerSquareTypes;
     public cornerDotTypes = cornerDotTypes;
     public colorTypes = colorTypes;
     public errorCorrectionLevels = errorCorrectionLevels;
     public backgroundShapeTypes = backgroundShapeTypes;
-    @Output() reset = new EventEmitter<void>();
 
     ngOnInit(): void {}
 
@@ -76,6 +77,11 @@ export class QrStylingFormComponent implements OnInit {
         reader.readAsDataURL(file);
         // Reset input so the same file can be re-selected if needed
         input.value = '';
+    }
+
+    onReset(): void {
+        this.form.reset(defaultFormValues());
+        this.reset.emit();
     }
 }
 

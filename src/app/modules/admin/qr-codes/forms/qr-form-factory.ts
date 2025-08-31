@@ -71,6 +71,6 @@ export function createQrForm(fb: FormBuilder): FormGroup {
   });
 }
 
-export const defaultFormValues = (): FormGroup => {
-    return createQrForm(new FormBuilder()).value;
+export const defaultFormValues = () => {
+  return createQrForm(new FormBuilder()).value;
 }
