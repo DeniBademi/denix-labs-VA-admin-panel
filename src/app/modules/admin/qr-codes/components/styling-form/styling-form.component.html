@@ -1,6 +1,6 @@
 <div class="bg-card rounded-2xl shadow p-6">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold">Custom Styling</h3>
+        <h2 class="text-xl font-semibold">Custom Styling</h2>
         <button
             class="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
             (click)="reset.emit()">
@@ -9,7 +9,7 @@
     </div>
     <form [formGroup]="form" class="space-y-6">
         <div>
-            <h4 class="font-medium mb-3">Business Identity & Branding</h4>
+            <h4 class="text-lg font-semibold mb-3">Business Identity & Branding</h4>
             <div class="space-y-4">
                 <mat-checkbox formControlName="showLogo">
                     Show Company Logo
@@ -23,7 +23,7 @@
                         </mat-form-field>
                         <div class="flex flex-col items-start w-full mb-4">
                             <mat-label>
-                                Upload Logo (PNG/JPG)
+                                Upload Logo <span class="text-sm text-gray-500 dark:text-gray-400">(JPG/PNG/SVG)</span>
                             </mat-label>
                             <label class="inline-flex items-center w-full py-3 mt-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors px-3 py-2">                                <mat-icon class="mr-2" [svgIcon]="'heroicons_outline:arrow-up-tray'"></mat-icon>
                                 <span>Choose File</span>
@@ -36,6 +36,7 @@
                             </label>
                             <!-- <span class="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: Transparent PNG, at least 200x200px</span> -->
                         </div>
+
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <mat-form-field class="w-full">
@@ -61,7 +62,7 @@
             </div>
         </div>
         <div>
-            <h4 class="font-medium mb-3">General Appearance</h4>
+            <h4 class="text-lg font-semibold mb-3">General Appearance</h4>
             <mat-form-field class="w-full">
                 <mat-label>Size (px)</mat-label>
                 <input matInput type="number" formControlName="size" min="100" max="1000">
@@ -72,7 +73,7 @@
             </mat-form-field>
         </div>
         <div>
-            <h4 class="font-medium mb-3">QR Code Functionality</h4>
+            <h4 class="text-lg font-semibold mb-3">QR Code Functionality</h4>
             <mat-form-field class="w-full">
                 <mat-label>Error Correction Level</mat-label>
                 <mat-select formControlName="errorCorrectionLevel">
@@ -84,10 +85,11 @@
             </mat-form-field>
         </div>
         <div>
-            <h4 class="font-medium mb-3">Visual Styling</h4>
+            <h4 class="text-lg font-semibold mb-3">Visual Styling</h4>
+            <h4 class="font-medium font-semibold mb-2">Dots</h4>
             <div class="space-y-4">
                 <mat-form-field class="w-full">
-                    <mat-label>Dot Style</mat-label>
+                    <mat-label>Style</mat-label>
                     <mat-select formControlName="dotStyle">
                         <mat-option *ngFor="let type of dotTypes" [value]="type.value">
                             {{ type.label }}
@@ -95,7 +97,6 @@
                     </mat-select>
                 </mat-form-field>
                 <div>
-                    <h5 class="text-sm font-medium mb-2">Dot Color</h5>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="space-y-3">
                             <mat-form-field class="w-full">
@@ -138,13 +139,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div>
-            <h4 class="font-medium mb-3">Professional Finishing</h4>
-            <div class="space-y-4">
                 <div>
-                    <h5 class="text-sm font-medium mb-2">Corner Squares</h5>
+                    <h5 class="font-medium font-semibold mb-2">Corner Squares</h5>
                     <mat-form-field class="w-full">
                         <mat-label>Style</mat-label>
                         <mat-select formControlName="cornerSquareType">
@@ -198,7 +194,7 @@
                     </div>
                 </div>
                 <div>
-                    <h5 class="text-sm font-medium mb-2">Corner Dots</h5>
+                    <h5 class="font-medium font-semibold mb-2">Corner Dots</h5>
                     <mat-form-field class="w-full">
                         <mat-label>Style</mat-label>
                         <mat-select formControlName="cornerDotType">
@@ -248,10 +244,11 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
+        </div>
+        <div>
         </div>
     </form>
 </div>
