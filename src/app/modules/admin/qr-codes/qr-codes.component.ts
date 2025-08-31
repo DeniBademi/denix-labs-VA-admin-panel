@@ -114,7 +114,7 @@ export class QrCodesComponent implements OnInit {
                         })
                     ])
                 }),
-            errorCorrectionLevel: ['L' as ErrorCorrectionLevel],
+            errorCorrectionLevel: ['H' as ErrorCorrectionLevel],
 
             // Professional Finishing
             cornerSquareType: ['square' as CornerSquareType],
@@ -370,7 +370,7 @@ export class QrCodesComponent implements OnInit {
             logoSize: 0.4,
             logoMargin: 0,
             hideBackgroundDots: true,
-            errorCorrectionLevel: 'L',
+            errorCorrectionLevel: 'H',
             shape: 'circle' as ShapeType
         });
 
