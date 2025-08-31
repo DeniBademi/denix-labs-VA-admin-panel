@@ -12,7 +12,18 @@ export function createQrForm(fb: FormBuilder): FormGroup {
 
     // General
     size: [300],
+    backgroundColorType: ['single'],
+    backgroundShape: [1],
     backgroundColor: ['#ffffff'],
+    backgroundGradient: fb.group({
+      type: ['linear'],
+      rotation: [0],
+      colorStops: fb.array([
+        fb.group({ offset: [0], color: ['#ffffff'] }),
+        fb.group({ offset: [1], color: ['#ff6b6b'] })
+      ]) as FormArray
+    }),
+
 
     // Dots
     dotStyle: ['square' as DotType],

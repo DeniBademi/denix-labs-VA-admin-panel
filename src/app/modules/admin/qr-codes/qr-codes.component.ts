@@ -5,11 +5,6 @@ import { Options, DotType, CornerSquareType, CornerDotType, ShapeType, Gradient 
 import { QrAgentUrlComponent } from './components/agent-url/agent-url.component';
 import { QrStylingFormComponent } from './components/styling-form/styling-form.component';
 import { QrPreviewComponent } from './components/preview/preview.component';
-import { dotTypes } from './config-options/dot-types';
-import { cornerSquareTypes } from './config-options/corner-square-types';
-import { cornerDotTypes } from './config-options/corner-dot-types';
-import { colorTypes } from './config-options/color-types';
-import { errorCorrectionLevels } from './config-options/error-correction-levels';
 import { createQrForm, defaultFormValues } from './forms/qr-form-factory';
 
 @Component({
@@ -37,12 +32,6 @@ export class QrCodesComponent implements OnInit {
 
     // Current QR code configuration
     public currentConfig: Options = {}
-
-    public dotTypes = dotTypes;
-    public cornerSquareTypes = cornerSquareTypes;
-    public cornerDotTypes = cornerDotTypes;
-    public colorTypes = colorTypes;
-    public errorCorrectionLevels = errorCorrectionLevels;
 
     constructor(
         private _formBuilder: FormBuilder
@@ -89,7 +78,9 @@ export class QrCodesComponent implements OnInit {
                 gradient: v.cornerDotColorType === 'gradient' ? v.cornerDotGradient : null
             },
             backgroundOptions: {
-                color: v.backgroundColor
+                round: v.backgroundShape,
+                color: v.backgroundColorType === 'single' ? v.backgroundColor : null,
+                gradient: v.backgroundColorType === 'gradient' ? v.backgroundGradient : null
             },
             qrOptions: {
                 errorCorrectionLevel: v.errorCorrectionLevel

@@ -13,11 +13,6 @@
                 <app-qr-agent-url [url]="currentConfig.data"></app-qr-agent-url>
                 <app-qr-styling-form
                     [form]="qrForm"
-                    [dotTypes]="dotTypes"
-                    [cornerSquareTypes]="cornerSquareTypes"
-                    [cornerDotTypes]="cornerDotTypes"
-                    [colorTypes]="colorTypes"
-                    [errorCorrectionLevels]="errorCorrectionLevels"
                     (reset)="resetToBasic()"
                 ></app-qr-styling-form>
             </div>

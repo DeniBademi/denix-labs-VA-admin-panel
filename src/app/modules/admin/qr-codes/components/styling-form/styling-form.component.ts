@@ -6,6 +6,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { dotTypes } from '../../config-options/dot-types';
+import { cornerSquareTypes } from '../../config-options/corner-square-types';
+import { cornerDotTypes } from '../../config-options/corner-dot-types';
+import { colorTypes } from '../../config-options/color-types';
+import { errorCorrectionLevels } from '../../config-options/error-correction-levels';
+import { backgroundShapeTypes } from '../../config-options/background-shape-types';
 import { DotType, CornerSquareType, CornerDotType, ShapeType, ErrorCorrectionLevel } from 'ngx-qrcode-styling';
 
 @Component({
@@ -26,12 +32,12 @@ import { DotType, CornerSquareType, CornerDotType, ShapeType, ErrorCorrectionLev
 export class QrStylingFormComponent implements OnInit {
 
     @Input() form!: FormGroup;
-    @Input() dotTypes!: { value: DotType, label: string }[];
-    @Input() cornerSquareTypes!: { value: CornerSquareType, label: string }[];
-    @Input() cornerDotTypes!: { value: CornerDotType, label: string }[];
-    @Input() colorTypes!: { value: 'single' | 'gradient', label: string }[];
-    @Input() errorCorrectionLevels!: { value: ErrorCorrectionLevel, label: string }[];
-
+    dotTypes = dotTypes;
+    public cornerSquareTypes = cornerSquareTypes;
+    public cornerDotTypes = cornerDotTypes;
+    public colorTypes = colorTypes;
+    public errorCorrectionLevels = errorCorrectionLevels;
+    public backgroundShapeTypes = backgroundShapeTypes;
     @Output() reset = new EventEmitter<void>();
 
     ngOnInit(): void {}
@@ -46,6 +52,10 @@ export class QrStylingFormComponent implements OnInit {
 
     get cornerDotGradientStops(): FormArray {
         return this.form.get('cornerDotGradient.colorStops') as unknown as FormArray;
+    }
+
+    get backgroundGradientStops(): FormArray {
+        return this.form.get('backgroundGradient.colorStops') as unknown as FormArray;
     }
 
     onLogoFileSelected(event: Event): void {
