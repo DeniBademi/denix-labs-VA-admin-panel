@@ -40,12 +40,6 @@ export class QrCodesComponent implements OnInit {
         height: 300
     };;
 
-    // Readymade templates
-    public templateNames = ['default', 'ocean', 'sunflower', 'luxury', 'bitcoin',
-        'starbucks', 'facebook', 'beans', 'green', 'sky', 'mosaic', 'jungle', 'arabic', 'tea', 'grape', 'coffee', 'chess', 'vintage', 'stamp'];
-    // Currently selected template
-    public selectedTemplate = 'default';
-
 
     // Available options for form controls
     public dotTypes = [
@@ -134,7 +128,7 @@ export class QrCodesComponent implements OnInit {
                     })
                 ])
             }),
-            cornerDotType: ['dot' as CornerDotType],
+            cornerDotType: ['square' as CornerDotType],
             cornerDotColorType: ['single'],
             cornerDotColor: ['#000000FF'],
             cornerDotGradient: this._formBuilder.group({
@@ -194,29 +188,6 @@ export class QrCodesComponent implements OnInit {
         });
         this.qrForm.get('cornerDotColorType')?.valueChanges.subscribe(() => {
             this.updateCustomConfig();
-        });
-    }
-
-    /**
-     * Select a template configuration
-     */
-    selectTemplate(template: string): void {
-        console.log('Selecting template:', template);
-        this.selectedTemplate = template;
-
-        this.preview.update(this.currentConfig, {
-            template: template
-        }).subscribe({
-            next: (result) => {
-                console.log('QR code updated successfully:', result);
-                this.currentConfig = {
-                    ...this.currentConfig,
-                    template: template
-                };
-            },
-            error: (error) => {
-                console.error('Failed to update QR code:', error);
-            }
         });
     }
 
