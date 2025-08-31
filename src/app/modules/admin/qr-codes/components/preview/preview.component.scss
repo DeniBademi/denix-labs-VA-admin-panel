@@ -1,0 +1,21 @@
+
+.qr-preview-box {
+    max-width: 400px;
+    max-height: 400px;
+    width: 100%;
+    height: auto;
+    display: inline-block;
+    overflow: hidden;
+}
+
+/* Ensure the rendered canvas/SVG fits within the preview box without affecting config size */
+:host ::ng-deep ngx-qrcode-styling,
+:host ::ng-deep ngx-qrcode-styling > *,
+:host ::ng-deep ngx-qrcode-styling canvas,
+:host ::ng-deep ngx-qrcode-styling svg {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+}
+

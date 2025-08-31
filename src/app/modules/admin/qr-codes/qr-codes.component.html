@@ -1,0 +1,33 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="text-3xl font-semibold tracking-tight leading-8">QR Codes</div>
+            <div class="font-medium tracking-tight text-secondary">Configure the QR code where your voice agent lives.</div>
+        </div>
+        <!-- Main Layout: Controls Left, Preview Right -->
+        <div class="flex gap-8">
+            <!-- Left Column: Controls -->
+            <div class="w-1/2 flex flex-col gap-6">
+                <app-qr-agent-url [url]="currentConfig.data"></app-qr-agent-url>
+                <app-qr-styling-form
+                    [form]="qrForm"
+                    [dotTypes]="dotTypes"
+                    [cornerSquareTypes]="cornerSquareTypes"
+                    [cornerDotTypes]="cornerDotTypes"
+                    [colorTypes]="colorTypes"
+                    [errorCorrectionLevels]="errorCorrectionLevels"
+                    (reset)="resetToBasic()"
+                ></app-qr-styling-form>
+            </div>
+            <!-- Right Column: Fixed QR Code Preview -->
+            <div class="w-1/2">
+                <app-qr-preview
+                    [config]="currentConfig"
+                    (download)="downloadQRCode()">
+                </app-qr-preview>
+            </div>
+        </div>
+    </div>
+</div>

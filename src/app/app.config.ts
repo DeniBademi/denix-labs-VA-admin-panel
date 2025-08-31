@@ -4,6 +4,7 @@ import {
     inject,
     isDevMode,
     provideAppInitializer,
+    importProvidersFrom,
 } from '@angular/core';
 import { LuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';

@@ -1,0 +1,22 @@
+<div class="bg-card rounded-2xl shadow p-6">
+    <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Voice Agent URL (Fixed)
+        </label>
+    </div>
+    <div class="flex items-center gap-2">
+        <div class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">
+            {{ url }}
+        </div>
+        <button
+            mat-stroked-button
+            [color]="'primary'"
+            (click)="copyUrl()"
+            class="flex-shrink-0">
+            <mat-icon [svgIcon]="'heroicons_outline:clipboard'"></mat-icon>
+            <span class="ml-2">Copy</span>
+        </button>
+    </div>
+</div>
+
+

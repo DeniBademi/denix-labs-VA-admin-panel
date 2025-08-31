@@ -95,6 +95,10 @@ export const appRoutes: Route[] = [
                 path: 'users',
                 loadChildren: () => import('app/modules/admin/users/users.routes')
             },
+            {
+                path: 'qr-codes',
+                loadChildren: () => import('app/modules/admin/qr-codes/qr-codes.routes')
+            },
         ]
     }
 ];
