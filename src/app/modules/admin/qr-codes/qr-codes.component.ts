@@ -89,7 +89,7 @@ export class QrCodesComponent implements OnInit {
             // Business Identity & Branding
             showLogo: [false],
                 logoUrl: [''],
-                logoSize: [1],
+                logoSize: [0.4],
                 logoMargin: [0],
                 hideBackgroundDots: [true],
             // General Appearance
