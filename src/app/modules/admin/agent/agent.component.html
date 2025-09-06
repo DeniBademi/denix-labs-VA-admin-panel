@@ -17,19 +17,73 @@
                         </mat-tab>
 
                         <mat-tab label="Personality">
-                            <app-personality [parentForm]="configForm"></app-personality>
+                            <div class="mt-8" [formGroup]="configForm">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Personality</mat-label>
+                                    <textarea
+                                        matInput
+                                        [formControlName]="'personality'"
+                                        [rows]="6"
+                                        placeholder="Describe the agent's personality"
+                                    ></textarea>
+                                </mat-form-field>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Environment">
+                            <div class="mt-8" [formGroup]="configForm">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Environment</mat-label>
+                                    <textarea
+                                        matInput
+                                        [formControlName]="'environment'"
+                                        [rows]="6"
+                                        placeholder="Provide environment/context details"
+                                    ></textarea>
+                                </mat-form-field>
+                            </div>
                         </mat-tab>
 
                         <mat-tab label="Tone">
-                            <app-tone [parentForm]="configForm"></app-tone>
+                            <div class="mt-8" [formGroup]="configForm">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Tone</mat-label>
+                                    <textarea
+                                        matInput
+                                        [formControlName]="'tone'"
+                                        [rows]="6"
+                                        placeholder="Describe the desired tone"
+                                    ></textarea>
+                                </mat-form-field>
+                            </div>
                         </mat-tab>
 
                         <mat-tab label="Goals">
-                            <app-goals [parentForm]="configForm"></app-goals>
+                            <div class="mt-8" [formGroup]="configForm">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Goals</mat-label>
+                                    <textarea
+                                        matInput
+                                        [formControlName]="'goals'"
+                                        [rows]="6"
+                                        placeholder="What should the agent achieve?"
+                                    ></textarea>
+                                </mat-form-field>
+                            </div>
                         </mat-tab>
 
                         <mat-tab label="Guardrails">
-                            <app-guardrails [parentForm]="configForm"></app-guardrails>
+                            <div class="mt-8" [formGroup]="configForm">
+                                <mat-form-field class="w-full">
+                                    <mat-label>Guardrails</mat-label>
+                                    <textarea
+                                        matInput
+                                        [formControlName]="'guardrails'"
+                                        [rows]="6"
+                                        placeholder="Constraints, do's and don'ts"
+                                    ></textarea>
+                                </mat-form-field>
+                            </div>
                         </mat-tab>
 
                         <!-- <mat-tab label="Tools">
@@ -57,24 +111,8 @@
             </div>
 
             <!-- Test Panel -->
-            <div class="ml-8 w-96">
-                <div class="sticky top-6">
-                    <div class="bg-card rounded-2xl shadow p-6">
-                        <div class="text-lg font-medium mb-4">Test the Assistant</div>
-                        <p class="text-secondary text-sm mb-6">
-                            Try out your configured assistant in a simulated chat environment to ensure it behaves as expected.
-                        </p>
-                        <button
-                            mat-flat-button
-                            [color]="'primary'"
-                            class="w-full"
-                            (click)="testAssistant()"
-                        >
-                            <mat-icon [svgIcon]="'heroicons_outline:chat-bubble-left-right'"></mat-icon>
-                            <span class="ml-2">Start Test Chat</span>
-                        </button>
-                    </div>
-                </div>
+            <div class="ml-8 w-96 flex flex-col justify-center" style="min-height: 100%;">
+              <va-agent-client></va-agent-client>
             </div>
         </div>
     </div>

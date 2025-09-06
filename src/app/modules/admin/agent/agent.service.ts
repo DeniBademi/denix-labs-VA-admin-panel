@@ -8,20 +8,11 @@ export interface AgentConfig {
         text: string;
         requirePermission: boolean;
     }[];
-    personality: {
-        name: string;
-        traits: string[];
-        role: string;
-        background: string;
-    };
-    tone: {
-        style: string;
-        patterns: string[];
-        elements: string[];
-    };
-    goals: string[];
-    guardrails: string[];
-    tools: string[];
+    personality: string;
+    environment: string;
+    tone: string;
+    goals: string;
+    guardrails: string;
 }
 
 @Injectable({providedIn: 'root'})
@@ -96,29 +87,29 @@ export class AgentService {
         if (!row) {
             return {
                 disclaimers: [],
-                personality: { name: '', traits: [], role: '', background: '' },
-                tone: { style: '', patterns: [], elements: [] },
-                goals: [],
-                guardrails: [],
-                tools: []
+                personality: '',
+                environment: '',
+                tone: '',
+                goals: '',
+                guardrails: ''
             };
         }
         return {
             disclaimers: row.disclaimers ?? [],
-            personality: row.personality ?? { name: '', traits: [], role: '', background: '' },
-            tone: row.tone ?? { style: '', patterns: [], elements: [] },
-            goals: row.goals ?? [],
-            guardrails: row.guardrails ?? [],
-            tools: row.tools ?? []
+            personality: row.personality ?? '',
+            environment: row.environment ?? '',
+            tone: row.tone ?? '',
+            goals: row.goals ?? '',
+            guardrails: row.guardrails ?? ''
         } as AgentConfig;
     };
 
     private _mapConfigToDb = (cfg: AgentConfig): any => ({
         disclaimers: cfg.disclaimers,
         personality: cfg.personality,
+        environment: cfg.environment,
         tone: cfg.tone,
         goals: cfg.goals,
-        guardrails: cfg.guardrails,
-        tools: cfg.tools
+        guardrails: cfg.guardrails
     });
 }

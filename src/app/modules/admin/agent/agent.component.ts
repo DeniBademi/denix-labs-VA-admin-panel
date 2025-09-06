@@ -4,18 +4,16 @@ import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule } from '@angular
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AgentConfig, AgentService } from './agent.service';
 
 // Import child components
 import { DisclaimersComponent } from './components/disclaimers/disclaimers.component';
-import { PersonalityComponent } from './components/personality/personality.component';
-import { ToneComponent } from './components/tone/tone.component';
-import { GoalsComponent } from './components/goals/goals.component';
-import { GuardrailsComponent } from './components/guardrails/guardrails.component';
-import { ToolsComponent } from './components/tools/tools.component';
 import { KnowledgeBaseComponent } from './components/knowledge-base/knowledge-base.component';
+import { AgentClientComponent } from './components/livekit-demo/agent-client/agent-client.component';
 
 @Component({
     selector: 'agent',
@@ -29,13 +27,11 @@ import { KnowledgeBaseComponent } from './components/knowledge-base/knowledge-ba
         MatButtonModule,
         MatIconModule,
         MatTabsModule,
+        MatFormFieldModule,
+        MatInputModule,
         DisclaimersComponent,
-        PersonalityComponent,
-        ToneComponent,
-        GoalsComponent,
-        GuardrailsComponent,
-        ToolsComponent,
-        KnowledgeBaseComponent
+        KnowledgeBaseComponent,
+        AgentClientComponent
     ],
     providers: [AgentService]
 })
@@ -55,20 +51,11 @@ export class AgentComponent implements OnInit, OnDestroy {
         // Initialize the form
         this.configForm = this._formBuilder.group({
             disclaimers: this._formBuilder.array([]),
-            personality: this._formBuilder.group({
-                name: [''],
-                traits: [[]],
-                role: [''],
-                background: ['']
-            }),
-            tone: this._formBuilder.group({
-                style: [''],
-                patterns: [[]],
-                elements: [[]]
-            }),
-            goals: [[]],
-            guardrails: [[]],
-            tools: [[]],
+            personality: [''],
+            environment: [''],
+            tone: [''],
+            goals: [''],
+            guardrails: [''],
             knowledgeBase: [[]]
         });
     }
@@ -90,10 +77,10 @@ export class AgentComponent implements OnInit, OnDestroy {
                 // Update form values
                 this.configForm.patchValue({
                     personality: config?.personality,
+                    environment: config?.environment,
                     tone: config?.tone,
                     goals: config?.goals,
                     guardrails: config?.guardrails,
-                    tools: config?.tools
                 });
 
                 // Handle disclaimers separately since it's a FormArray

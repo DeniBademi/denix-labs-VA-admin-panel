@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
 import { SupabaseService } from 'app/core/supabase/supabase.service';
 import { WorkspaceService } from 'app/core/workspace/workspace.service';
+import { KnowledgeBaseProcessorService } from './knowledge-base-processor.service';
 
 export interface KnowledgeBaseFile {
     name: string;
@@ -16,7 +17,8 @@ export interface KnowledgeBaseFile {
 export class KnowledgeBaseService {
     constructor(
         private _supabase: SupabaseService,
-        private _workspace: WorkspaceService
+        private _workspace: WorkspaceService,
+        private _processor: KnowledgeBaseProcessorService
     ) {}
 
     /**
@@ -49,7 +51,10 @@ export class KnowledgeBaseService {
     uploadFile(file: File): Observable<KnowledgeBaseFile> {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
+            const clientWsId = await this._workspace.getWorkspaceId();
+            // Get server-evaluated workspace id used by RLS policies to avoid mismatches
+            const { data: srvWsId } = await supabase.rpc('current_user_workspace_id');
+            const wsId = (srvWsId as string | null) ?? clientWsId;
             if (!wsId) throw new Error('Workspace not set');
 
             // 1) Create source row (pending)
@@ -75,12 +80,19 @@ export class KnowledgeBaseService {
                 .update({ uri: path })
                 .eq('id', source.id);
 
-            await supabase
-                .from('kb_jobs')
-                .insert({ workspace_id: wsId, source_id: source.id, kind: 'ingest', status: 'queued' });
+            // 4) Trigger server-side processing via Edge Function
+            try {
+                await this._processor.processSource(wsId, source.id, path);
+            } catch (procErr) {
+                console.error('Error processing file', procErr);
+                // Mark source as failed and rethrow to surface error to UI
+                await supabase
+                    .from('kb_sources')
+                    .update({ status: 'error' })
+                    .eq('id', source.id);
+                throw procErr;
+            }
 
-            // Optional: call edge function to kick off ingestion
-            // await supabase.functions.invoke('kb-ingest-file', { body: { workspace_id: wsId, source_id: source.id, path } });
 
             return {
                 name: file.name,
