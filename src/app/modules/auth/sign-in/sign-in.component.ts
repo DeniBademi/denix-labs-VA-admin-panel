@@ -145,7 +145,6 @@ export class AuthSignInComponent implements OnInit, AfterViewInit {
     signIn(): void {
         // Return if the form is invalid
         if (this.signInForm.invalid) {
-            console.log(this.signInForm.errors);
             return;
         }
 

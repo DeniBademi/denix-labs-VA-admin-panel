@@ -111,6 +111,9 @@
                     />
                 </mat-form-field>
 
+                <!-- Captcha -->
+                <div id="turnstile-container" class="flex justify-center"></div>
+
                 <!-- ToS and PP -->
                 <div class="mt-1.5 inline-flex w-full items-end">
                     <mat-checkbox
@@ -138,7 +141,7 @@
                     class="fuse-mat-button-large mt-6 w-full"
                     mat-flat-button
                     [color]="'primary'"
-                    [disabled]="signUpForm.disabled"
+                    [disabled]="signUpForm.disabled || !captchaToken"
                     (click)="signUp()"
                 >
                     @if (!signUpForm.disabled) {

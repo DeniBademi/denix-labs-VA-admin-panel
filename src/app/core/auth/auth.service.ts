@@ -38,11 +38,13 @@ export class AuthService {
      *
      * @param email
      */
-    forgotPassword(email: string): Observable<any> {
+    forgotPassword(email: string, captchaToken?: string): Observable<any> {
+        const options: any = { redirectTo: `${location.origin}/reset-password` };
+        if (captchaToken) {
+            options.captchaToken = captchaToken;
+        }
         return from(
-            this._supabaseService.getSupabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${location.origin}/reset-password`
-            })
+            this._supabaseService.getSupabase.auth.resetPasswordForEmail(email, options)
         );
     }
 
@@ -68,7 +70,6 @@ export class AuthService {
         if (this._authenticated) {
             return throwError('User is already logged in.');
         }
-
         return from(this._supabaseService.getSupabase.auth.signInWithPassword({
             email: credentials.email,
             password: credentials.password,
