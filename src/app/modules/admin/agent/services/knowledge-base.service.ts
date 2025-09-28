@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { SupabaseService } from 'app/core/supabase/supabase.service';
 import { WorkspaceService } from 'app/core/workspace/workspace.service';
 import { KnowledgeBaseProcessorService } from './knowledge-base-processor.service';
+import { AgentService } from '../agent.service';
+import { BaseAgentService } from '../shared/base-agent-service';
 
 export interface KnowledgeBaseFile {
     name: string;
@@ -14,82 +16,105 @@ export interface KnowledgeBaseFile {
 @Injectable({
     providedIn: 'root'
 })
-export class KnowledgeBaseService {
+export class KnowledgeBaseService extends BaseAgentService {
+
     constructor(
-        private _supabase: SupabaseService,
+        protected override _supabase: SupabaseService,
         private _workspace: WorkspaceService,
+        private _agentService: AgentService,
         private _processor: KnowledgeBaseProcessorService
-    ) {}
+    ) {
+        super(_supabase);
+    }
 
     /**
      * List KB files for current workspace (from kb_sources)
      */
     listFiles(): Observable<KnowledgeBaseFile[]> {
-        return from((async () => {
-            const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
-            if (!wsId) return [] as KnowledgeBaseFile[];
+        return this.executeSupabaseOperation(async () => {
+            const agentId = this.getAgentId();
+            if (!agentId) return [] as KnowledgeBaseFile[];
 
-            const { data, error } = await supabase
-                .from('kb_sources')
-                .select('title, uri, created_at')
-                .eq('workspace_id', wsId)
-                .eq('type', 'file')
-                .order('created_at', { ascending: false });
-            if (error) throw error;
-            return (data ?? []).map(row => ({
+            const data = await this.performSelect<any>('kb_sources', 'title, uri, created_at', [
+                { column: 'agent_id', value: agentId },
+                { column: 'type', value: 'file' }
+            ]);
+
+            // Sort by created_at descending
+            const sortedData = data.sort((a, b) =>
+                new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+
+            return sortedData.map(row => ({
                 name: row.title,
                 url: row.uri,
                 uploadedAt: row.created_at
             } as KnowledgeBaseFile));
-        })());
+        });
     }
 
     /**
      * Upload a file to the knowledge base (Supabase storage + kb_sources/kb_jobs)
      */
     uploadFile(file: File): Observable<KnowledgeBaseFile> {
-        return from((async () => {
-            const supabase = this._supabase.getSupabase;
+        return this.executeSupabaseOperation(async () => {
+            this.validateAgentId();
+            const agentId = this.getAgentId()!;
+
+            // Ensure there is an authenticated Supabase session
+            const userId = await this.getAuthenticatedUserId();
             const clientWsId = await this._workspace.getWorkspaceId();
-            // Get server-evaluated workspace id used by RLS policies to avoid mismatches
-            const { data: srvWsId } = await supabase.rpc('current_user_workspace_id');
-            const wsId = (srvWsId as string | null) ?? clientWsId;
-            if (!wsId) throw new Error('Workspace not set');
 
             // 1) Create source row (pending)
-            const { data: source, error: srcErr } = await supabase
-                .from('kb_sources')
-                .insert({ workspace_id: wsId, type: 'file', title: file.name, status: 'pending' })
-                .select('*')
-                .single();
-            if (srcErr) throw srcErr;
+            const source = await this.performInsert<any>('kb_sources', {
+                agent_id: agentId,
+                type: 'file',
+                title: file.name,
+                status: 'pending'
+            });
+
+            if (!this.isValidUuid(source?.id)) {
+                throw new Error('Invalid source id');
+            }
 
             // 2) Upload to storage bucket 'kb'
-            const path = `${wsId}/${source.id}/${file.name}`;
-            const { error: upErr } = await supabase.storage
-                .from('kb')
-                .upload(path, file, { upsert: true, contentType: file.type });
+            const safeFileName = String(file.name ?? 'file').replace(/[\\/]/g, '_');
+            const path = `${clientWsId}/${agentId}/${source.id}/${safeFileName}`;
+            const supabase = this._supabase.getSupabase;
+            const bucket = supabase.storage.from('kb');
+            let { error: upErr } = await bucket.upload(path, file, { upsert: true, contentType: file.type });
             if (upErr && !upErr.message?.includes('The resource already exists')) {
-                throw upErr;
+                const isUuidCastErr = /invalid input syntax for type uuid/i.test(upErr.message ?? '');
+                if (isUuidCastErr) {
+                    // Fallback: Use signed upload URL to bypass owner uuid assignment quirks
+                    const { data: signed, error: signErr } = await bucket.createSignedUploadUrl(path);
+                    if (signErr || !signed?.token) {
+                        throw upErr; // original error if we cannot get a signed URL
+                    }
+                    const { error: signedErr } = await bucket.uploadToSignedUrl(path, signed.token, file, { upsert: true, contentType: file.type });
+                    if (signedErr) {
+                        throw upErr; // keep original error context
+                    }
+                    upErr = null;
+                } else {
+                    throw upErr;
+                }
             }
 
             // 3) Update source uri and queue ingest job
-            await supabase
-                .from('kb_sources')
-                .update({ uri: path })
-                .eq('id', source.id);
+            await this.performUpdate<any>('kb_sources', { uri: path }, [
+                { column: 'id', value: source.id }
+            ]);
 
             // 4) Trigger server-side processing via Edge Function
             try {
-                await this._processor.processSource(wsId, source.id, path);
+                await this._processor.processSource(clientWsId, agentId, source.id, path);
             } catch (procErr) {
                 console.error('Error processing file', procErr);
                 // Mark source as failed and rethrow to surface error to UI
-                await supabase
-                    .from('kb_sources')
-                    .update({ status: 'error' })
-                    .eq('id', source.id);
+                await this.performUpdate<any>('kb_sources', { status: 'error' }, [
+                    { column: 'id', value: source.id }
+                ]);
                 throw procErr;
             }
 
@@ -100,52 +125,70 @@ export class KnowledgeBaseService {
                 uploadedAt: new Date().toISOString(),
                 size: file.size
             } as KnowledgeBaseFile;
-        })());
+        });
     }
 
     /**
      * Delete a file/source
      */
     deleteFile(fileUrl: string): Observable<boolean> {
-        return from((async () => {
-            const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
-            if (!wsId) throw new Error('Workspace not set');
+        return this.executeSupabaseOperation(async () => {
+            this.validateAgentId();
+            const agentId = this.getAgentId()!;
+
+            if (!fileUrl || !fileUrl.trim()) {
+                throw new Error('Invalid file URL');
+            }
+
+            console.log('Deleting file with URL:', fileUrl);
 
             // Resolve source by uri (path)
-            const { data: src, error } = await supabase
-                .from('kb_sources')
-                .select('id')
-                .eq('workspace_id', wsId)
-                .eq('uri', fileUrl)
-                .maybeSingle();
-            if (error) throw error;
+            const sources = await this.performSelect<any>('kb_sources', 'id, uri', [
+                { column: 'agent_id', value: agentId },
+                { column: 'uri', value: fileUrl }
+            ]);
 
-            // Delete the object from storage
-            const { error: delErr } = await supabase.storage.from('kb').remove([fileUrl]);
-            if (delErr) throw delErr;
+            if (sources.length === 0) {
+                console.warn('No source found for URL:', fileUrl);
+                return true; // Already deleted or doesn't exist
+            }
 
-            // Delete the source row (cascades to documents/chunks)
-            if (src?.id) {
-                const { error: srcDelErr } = await supabase
-                    .from('kb_sources')
-                    .delete()
-                    .eq('id', src.id);
-                if (srcDelErr) throw srcDelErr;
+            const src = sources[0];
+            console.log('Found source:', src);
+
+            // Delete the source row first (cascades to documents/chunks)
+            await this.performDelete('kb_sources', [
+                { column: 'id', value: src.id }
+            ]);
+
+            // Delete the object from storage using the actual stored URI
+            const storagePathToDelete = src.uri || fileUrl;
+            console.log('Attempting to delete from storage:', storagePathToDelete);
+
+            try {
+                const supabase = this._supabase.getSupabase;
+                const { error: delErr } = await supabase.storage.from('kb').remove([storagePathToDelete]);
+                if (delErr) {
+                    console.error('Storage deletion error:', delErr, 'for path:', storagePathToDelete);
+                    // Log but don't fail the operation since DB record is deleted
+                }
+            } catch (storageError) {
+                console.error('Storage deletion exception:', storageError);
+                // Continue - storage cleanup is secondary to DB cleanup
             }
 
             return true;
-        })());
+        });
     }
 
     /**
      * Generate a signed download URL for a file
      */
     getDownloadUrl(fileUrl: string): Observable<string> {
-        return from((async () => {
+        return this.executeSupabaseOperation(async () => {
             const supabase = this._supabase.getSupabase;
             const { data } = await supabase.storage.from('kb').createSignedUrl(fileUrl, 600);
             return data?.signedUrl ?? fileUrl;
-        })());
+        });
     }
 }

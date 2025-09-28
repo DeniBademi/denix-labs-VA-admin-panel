@@ -14,6 +14,7 @@ export class ProductsService {
         page: 0,
         limit: 10
     });
+    private _agentId: string | null = null;
 
     /**
      * Constructor
@@ -22,6 +23,13 @@ export class ProductsService {
         private _supabase: SupabaseService,
         private _workspace: WorkspaceService
     ) {}
+
+    /**
+     * Set current agent context (subroute param)
+     */
+    setAgentId(agentId: string | null): void {
+        this._agentId = agentId;
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -56,17 +64,18 @@ export class ProductsService {
      * Get products
      */
     getProducts(filter?: ProductFilter): Observable<ProductsResponse> {
-        return from(this._workspace.getWorkspaceId()).pipe(
-            map((wsId) => wsId),
-            // Execute query
-            // Using from(Promise) to keep Observable API
+        return from(Promise.resolve(this._agentId)).pipe(
             // eslint-disable-next-line rxjs/no-ignored-observable
-            switchMap((wsId) => {
+            switchMap((agentId) => {
+                if (!agentId) {
+                    const limit = filter?.limit ?? 10;
+                    return from(Promise.resolve({ products: [], total: 0, page: 0, limit } as ProductsResponse));
+                }
                 const supabase = this._supabase.getSupabase;
                 let query = supabase
-                    .from('products')
+                    .from('sales_products')
                     .select('*', { count: 'exact' })
-                    .eq('workspace_id', wsId);
+                    .eq('agent_id', agentId);
 
                 if (filter?.search) {
                     query = query.ilike('name', `%${filter.search}%`);
@@ -139,7 +148,7 @@ export class ProductsService {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
             const { data, error } = await supabase
-                .from('products')
+                .from('sales_products')
                 .select('*')
                 .eq('id', id)
                 .single();
@@ -154,11 +163,12 @@ export class ProductsService {
     createProduct(product: Partial<Product>): Observable<Product> {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
+            const agentId = this._agentId;
+            if (!agentId) throw new Error('Agent not set');
             const payload = this._mapProductToDb(product);
-            payload.workspace_id = wsId;
+            payload.agent_id = agentId;
             const { data, error } = await supabase
-                .from('products')
+                .from('sales_products')
                 .insert(payload)
                 .select('*')
                 .single();
@@ -178,7 +188,7 @@ export class ProductsService {
             const supabase = this._supabase.getSupabase;
             const payload = this._mapProductToDb(product);
             const { data, error } = await supabase
-                .from('products')
+                .from('sales_products')
                 .update(payload)
                 .eq('id', id)
                 .select('*')
@@ -202,7 +212,7 @@ export class ProductsService {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
             const { error } = await supabase
-                .from('products')
+                .from('sales_products')
                 .delete()
                 .eq('id', id);
             if (error) throw error;
@@ -219,14 +229,15 @@ export class ProductsService {
      * Get categories
      */
     getCategories(): Observable<Category[]> {
-        return from(this._workspace.getWorkspaceId()).pipe(
-            switchMap((wsId) => {
+        return from(Promise.resolve(this._agentId)).pipe(
+            switchMap((agentId) => {
+                if (!agentId) return from(Promise.resolve([] as Category[]));
                 const supabase = this._supabase.getSupabase;
                 return from(
                     supabase
-                        .from('categories')
+                        .from('sales_categories')
                         .select('*')
-                        .eq('workspace_id', wsId)
+                        .eq('agent_id', agentId)
                         .order('path', { ascending: true })
                         .then(({ data, error }) => {
                             if (error) throw error;
@@ -244,11 +255,12 @@ export class ProductsService {
     createCategory(category: Partial<Category>): Observable<Category> {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
+            const agentId = this._agentId;
+            if (!agentId) throw new Error('Agent not set');
             const payload = this._mapCategoryToDb(category);
-            payload.workspace_id = wsId;
+            payload.agent_id = agentId;
             const { data, error } = await supabase
-                .from('categories')
+                .from('sales_categories')
                 .insert(payload)
                 .select('*')
                 .single();
@@ -267,7 +279,7 @@ export class ProductsService {
             const supabase = this._supabase.getSupabase;
             const payload = this._mapCategoryToDb(category);
             const { data, error } = await supabase
-                .from('categories')
+                .from('sales_categories')
                 .update(payload)
                 .eq('id', id)
                 .select('*')
@@ -285,7 +297,7 @@ export class ProductsService {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
             const { error } = await supabase
-                .from('categories')
+                .from('sales_categories')
                 .delete()
                 .eq('id', id);
             if (error) throw error;
@@ -298,9 +310,9 @@ export class ProductsService {
      */
     importProductsFromCsv(file: File, mapping: Partial<CsvColumnMapping>): Observable<CsvImportResult> {
         return from((async () => {
-            const workspaceId = await this._workspace.getWorkspaceId();
-            if (!workspaceId) {
-                throw new Error('Workspace not set');
+            const agentId = this._agentId;
+            if (!agentId) {
+                throw new Error('Agent not set');
             }
 
             const fileNameLower = file.name.toLowerCase();
@@ -431,7 +443,7 @@ export class ProductsService {
                 }
 
                 const payload: any = {
-                    workspace_id: workspaceId,
+                    agent_id: agentId,
                     sku: String(skuRaw).trim(),
                     name: String(nameRaw).trim(),
                     description: String(descriptionRaw ?? ''),
@@ -446,8 +458,8 @@ export class ProductsService {
                 try {
                     const supabase = this._supabase.getSupabase;
                     const { error } = await supabase
-                        .from('products')
-                        .upsert(payload, { onConflict: 'workspace_id,sku' })
+                        .from('sales_products')
+                        .upsert(payload, { onConflict: 'agent_id,sku' })
                         .select('id')
                         .single();
                     if (error) throw error;
@@ -527,14 +539,14 @@ export class ProductsService {
     ensureCategoriesForPaths(paths: string[]): Observable<void> {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
-            if (!wsId) throw new Error('Workspace not set');
+            const agentId = this._agentId;
+            if (!agentId) throw new Error('Agent not set');
 
-            // Load existing categories for workspace
+            // Load existing categories for agent
             const { data: existingRows, error: loadErr } = await supabase
-                .from('categories')
+                .from('sales_categories')
                 .select('*')
-                .eq('workspace_id', wsId);
+                .eq('agent_id', agentId);
             if (loadErr) throw loadErr;
             const pathToCategory: Map<string, any> = new Map<string, any>();
             for (const row of existingRows ?? []) {
@@ -551,13 +563,13 @@ export class ProductsService {
                     accumPath = i === 0 ? segments[0] : `${accumPath}/${segments[i]}`;
                     if (!pathToCategory.has(accumPath)) {
                         const payload: any = {
-                            workspace_id: wsId,
+                            agent_id: agentId,
                             name: segments[i],
                             path: accumPath,
                             parent_id: parentId ?? null
                         };
                         const { data: created, error: insErr } = await supabase
-                            .from('categories')
+                            .from('sales_categories')
                             .insert(payload)
                             .select('*')
                             .single();

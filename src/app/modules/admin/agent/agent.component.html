@@ -1,119 +1,81 @@
+
 <div class="flex flex-col flex-auto min-w-0">
     <!-- Main -->
     <div class="flex-auto p-6 sm:p-10">
-        <div class="flex">
             <!-- Configuration Section -->
             <div class="flex-auto max-w-3xl">
                 <div>
                     <div class="text-3xl font-semibold tracking-tight leading-8">Agent Configuration</div>
                     <div class="font-medium tracking-tight text-secondary">Configure your virtual sales consultant's behavior, personality, and capabilities.</div>
                 </div>
+            </div>
+            <!-- Main Layout: Responsive - Preview first on mobile, side-by-side on md+ -->
+            <div class="flex flex-col-reverse gap-6 md:flex-row md:gap-8">
+                <!-- Left Column: Controls -->
+                <div class="w-full md:w-1/2 flex flex-col gap-6">
+                    <form [formGroup]="configForm" class="mt-8" (ngSubmit)="$event.preventDefault()">
+                        <!-- Tabs -->
+                        <mat-tab-group>
+                            <mat-tab label="Disclaimers">
+                                <app-disclaimers [parentForm]="configForm"></app-disclaimers>
+                            </mat-tab>
 
-                <form [formGroup]="configForm" class="mt-8">
-                    <!-- Tabs -->
-                    <mat-tab-group>
-                        <mat-tab label="Disclaimers">
-                            <app-disclaimers [parentForm]="configForm"></app-disclaimers>
-                        </mat-tab>
+                            <mat-tab label="Personality">
+                                <div class="mt-8" [formGroup]="configForm">
+                                    <app-personality [parentForm]="configForm"></app-personality>
+                                </div>
+                            </mat-tab>
 
-                        <mat-tab label="Personality">
-                            <div class="mt-8" [formGroup]="configForm">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Personality</mat-label>
-                                    <textarea
-                                        matInput
-                                        [formControlName]="'personality'"
-                                        [rows]="6"
-                                        placeholder="Describe the agent's personality"
-                                    ></textarea>
-                                </mat-form-field>
-                            </div>
-                        </mat-tab>
+                            <mat-tab label="Environment">
+                                <div class="mt-8" [formGroup]="configForm">
+                                    <app-environment [parentForm]="configForm"></app-environment>
+                                </div>
+                            </mat-tab>
 
-                        <mat-tab label="Environment">
-                            <div class="mt-8" [formGroup]="configForm">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Environment</mat-label>
-                                    <textarea
-                                        matInput
-                                        [formControlName]="'environment'"
-                                        [rows]="6"
-                                        placeholder="Provide environment/context details"
-                                    ></textarea>
-                                </mat-form-field>
-                            </div>
-                        </mat-tab>
+                            <mat-tab label="Tone">
+                                <div class="mt-8" [formGroup]="configForm">
+                                    <app-tone [parentForm]="configForm"></app-tone>
+                                </div>
+                            </mat-tab>
 
-                        <mat-tab label="Tone">
-                            <div class="mt-8" [formGroup]="configForm">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Tone</mat-label>
-                                    <textarea
-                                        matInput
-                                        [formControlName]="'tone'"
-                                        [rows]="6"
-                                        placeholder="Describe the desired tone"
-                                    ></textarea>
-                                </mat-form-field>
-                            </div>
-                        </mat-tab>
+                            <mat-tab label="Goals">
+                                <div class="mt-8" [formGroup]="configForm">
+                                    <app-goals [parentForm]="configForm"></app-goals>
+                                </div>
+                            </mat-tab>
 
-                        <mat-tab label="Goals">
-                            <div class="mt-8" [formGroup]="configForm">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Goals</mat-label>
-                                    <textarea
-                                        matInput
-                                        [formControlName]="'goals'"
-                                        [rows]="6"
-                                        placeholder="What should the agent achieve?"
-                                    ></textarea>
-                                </mat-form-field>
-                            </div>
-                        </mat-tab>
+                            <mat-tab label="Guardrails">
+                                <div class="mt-8" [formGroup]="configForm">
+                                    <app-guardrails [parentForm]="configForm"></app-guardrails>
+                                </div>
+                            </mat-tab>
 
-                        <mat-tab label="Guardrails">
-                            <div class="mt-8" [formGroup]="configForm">
-                                <mat-form-field class="w-full">
-                                    <mat-label>Guardrails</mat-label>
-                                    <textarea
-                                        matInput
-                                        [formControlName]="'guardrails'"
-                                        [rows]="6"
-                                        placeholder="Constraints, do's and don'ts"
-                                    ></textarea>
-                                </mat-form-field>
-                            </div>
-                        </mat-tab>
+                            <mat-tab label="Knowledge Base">
+                                <app-knowledge-base [parentForm]="configForm"></app-knowledge-base>
+                            </mat-tab>
+                        </mat-tab-group>
 
-                        <!-- <mat-tab label="Tools">
-                            <app-tools [parentForm]="configForm"></app-tools>
-                        </mat-tab> -->
-
-                        <mat-tab label="Knowledge Base">
-                            <app-knowledge-base [parentForm]="configForm"></app-knowledge-base>
-                        </mat-tab>
-                    </mat-tab-group>
-
-                    <!-- Actions -->
-                    <div class="flex items-center justify-end mt-8">
-                        <button
-                            mat-flat-button
-                            [color]="'primary'"
-                            [disabled]="configForm.invalid"
-                            (click)="saveConfig()"
-                        >
-                            <mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                            <span class="ml-2">Save</span>
-                        </button>
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end mt-8">
+                            <button
+                                mat-flat-button
+                                [color]="'primary'"
+                                [disabled]="configForm.invalid"
+                                (click)="saveConfig()"
+                                type="button"
+                            >
+                                <mat-icon [svgIcon]="'heroicons_outline:check'"></mat-icon>
+                                <span class="ml-2">Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Right Column: Fixed Agent Client -->
+                <div class="w-full md:w-1/2 pt-8">
+                    <div class="sticky top-12 w-96 mx-auto">
+                        <va-agent-client></va-agent-client>
                     </div>
-                </form>
+                </div>
             </div>
-
-            <!-- Test Panel -->
-            <div class="ml-8 w-96 flex flex-col justify-center" style="min-height: 100%;">
-              <va-agent-client></va-agent-client>
-            </div>
-        </div>
     </div>
 </div>

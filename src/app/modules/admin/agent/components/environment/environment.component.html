@@ -1,0 +1,44 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <!-- Goals -->
+        <mat-form-field class="w-full">
+            <mat-label>Environment</mat-label>
+            <textarea
+                matInput
+                [formControlName]="'environment'"
+                [rows]="6"
+                placeholder="Provide environment/context details"
+            ></textarea>
+        </mat-form-field>
+    </div>
+
+    <!-- Tips Section -->
+    <fuse-alert
+        class="mt-6"
+        [appearance]="'outline'"
+        [type]="'basic'"
+        [showIcon]="false"
+    >
+        <span fuseAlertTitle>About Environment</span>
+        <div class="space-y-2">
+            <p>The environment captures where, how, and under what conditions your agent interacts with the user. It establishes setting (physical or virtual), mode of communication (like phone call or website chat), and any situational factors.
+
+            </p>
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>State the medium:</b> Define the communication channel (e.g. “over the phone”, “via smart speaker”, “in a noisy environment”). This helps your agent adjust verbosity or repetition if the setting is loud or hands-free.
+                </li>
+            </ul>
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Include relevant context:</b> Inform your agent about the user’s likely state. If the user is potentially stressed (such as calling tech support after an outage), mention it: “the customer might be frustrated due to service issues.” This primes the agent to respond with empathy.
+                </li>
+            </ul>
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Avoid unnecessary scene-setting:</b> Focus on elements that affect conversation. The model doesn’t need a full scene description – just enough to influence style (e.g. formal office vs. casual home setting).
+                </li>
+            </ul>
+        </div>
+    </fuse-alert>
+</div>

@@ -1,40 +1,37 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Options, DotType, CornerSquareType, CornerDotType, ShapeType, Gradient } from 'ngx-qrcode-styling';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+import { Options } from 'ngx-qrcode-styling';
 import { QrAgentUrlComponent } from './components/agent-url/agent-url.component';
 import { QrStylingFormComponent } from './components/styling-form/styling-form.component';
 import { QrPreviewComponent } from './components/preview/preview.component';
 import { createQrForm, defaultFormValues } from './forms/qr-form-factory';
 
 @Component({
-    selector: 'app-qr-codes',
+    selector: 'app-qr-code-tab',
     standalone: true,
     imports: [
-    CommonModule,
-    QrAgentUrlComponent,
-    QrStylingFormComponent,
-    QrPreviewComponent
-],
-    templateUrl: './qr-codes.component.html',
-    styleUrls: ['./qr-codes.component.scss']
+        CommonModule,
+        QrAgentUrlComponent,
+        QrStylingFormComponent,
+        QrPreviewComponent
+    ],
+    templateUrl: './qr-code-tab.component.html',
+    styleUrls: ['./qr-code-tab.component.scss']
 })
-export class QrCodesComponent implements OnInit {
+    export class QrCodeTabComponent implements OnInit {
 
-    // Child preview component reference
     @ViewChild(QrPreviewComponent) preview!: QrPreviewComponent;
 
-    // Fixed agent URL
-    public readonly AGENT_URL = "https://your-voice-agent-url.com";
-
-    // Form for custom styling
+    public AGENT_URL = "";
     public qrForm: FormGroup;
-
-    // Current QR code configuration
-    public currentConfig: Options = {}
+    public currentConfig: Options = {};
 
     constructor(
-        private _formBuilder: FormBuilder
+        private _formBuilder: FormBuilder,
+        private _route: ActivatedRoute
     ) {
         this.qrForm = createQrForm(this._formBuilder);
         this.updateCustomConfig();
@@ -43,20 +40,27 @@ export class QrCodesComponent implements OnInit {
     ngOnInit(): void {
         this.resetToBasic();
         this.qrForm.valueChanges.subscribe(() => this.updateCustomConfig());
+
+        this.AGENT_URL = `https://v1.denixlabs.com/${this._route.snapshot.paramMap.get('agent_id')}`;
+        this._route.paramMap
+            .pipe(
+                map((pm) => pm.get('agent_id')),
+                distinctUntilChanged()
+            )
+            .subscribe((agentId) => {
+                if (!agentId) return;
+                this.updateCustomConfig();
+                this.AGENT_URL = `https://v1.denixlabs.com/${agentId}`;
+            });
     }
 
-    /**
-     * Update custom configuration based on form values
-     */
     updateCustomConfig(): void {
         const next = this.buildConfigFromForm();
         this.applyConfig(next);
     }
 
     private buildConfigFromForm(): Options {
-
         const v = this.qrForm.value;
-
         const config: Options = {
             width: v.size,
             height: v.size,
@@ -106,10 +110,9 @@ export class QrCodesComponent implements OnInit {
         this.qrForm.patchValue(defaultFormValues().value);
     }
 
-    /**
-     * Reset to basic configuration
-     */
     resetToBasic(): void {
         this.applyConfig({ data: this.AGENT_URL, width: 300, height: 300, template: 'default' } as Options);
     }
 }
+
+

@@ -18,6 +18,8 @@ import { MarketingService } from './marketing.service';
 import { Subject, takeUntil } from 'rxjs';
 import { HasPermissionDirective } from 'app/core/auth/directives/has-permission.directive';
 import { CampaignDialogComponent } from './campaign-dialog/campaign-dialog.component';
+import { ActivatedRoute } from '@angular/router';
+import { map, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'app-marketing',
@@ -77,7 +79,8 @@ export class MarketingComponent implements OnInit {
     constructor(
         private _marketingService: MarketingService,
         private _fuseConfirmationService: FuseConfirmationService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _route: ActivatedRoute
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -88,6 +91,18 @@ export class MarketingComponent implements OnInit {
      * On init
      */
     ngOnInit(): void {
+
+        // React to agent_id route changes
+        this._route.paramMap
+            .pipe(
+                map((pm) => pm.get('agent_id')),
+                distinctUntilChanged(),
+            )
+            .subscribe((agentId) => {
+                this._marketingService.setAgentId(agentId);
+                this.filter.page = 0;
+                this.getCampaigns();
+            });
         // Get campaigns
         this._marketingService.campaigns$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -107,8 +122,7 @@ export class MarketingComponent implements OnInit {
                 if (pg.page !== undefined) this.filter.page = pg.page;
             });
 
-        // Load initial data
-        this.getCampaigns();
+        // Initial load handled by paramMap subscription
     }
 
     /**

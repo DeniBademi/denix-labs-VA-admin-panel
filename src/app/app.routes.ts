@@ -3,6 +3,7 @@ import { initialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { RoleGuard } from 'app/core/auth/guards/role.guard';
+import { AgentTypeGuard } from 'app/core/auth/guards/agent-type.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
 
 // @formatter:off
@@ -76,19 +77,31 @@ export const appRoutes: Route[] = [
         },
         children: [
             {
+                path: 'calls',
+                loadChildren: () => import('app/modules/admin/calls/calls.routes')
+            },
+            {
                 path: 'dashboard',
                 loadChildren: () => import('app/modules/admin/dashboard/dashboard.routes')
             },
             {
-                path: 'agent',
+                path: 'agents',
+                loadChildren: () => import('app/modules/admin/agents/agents.routes')
+            },
+            {
+                path: 'agent/:agent_id',
                 loadChildren: () => import('app/modules/admin/agent/agent.routes')
             },
             {
-                path: 'products',
+                path: 'products/:agent_id',
+                canActivate: [AgentTypeGuard],
+                data: { agentTypes: ['sales'] },
                 loadChildren: () => import('app/modules/admin/products/products.routes')
             },
             {
-                path: 'marketing',
+                path: 'marketing/:agent_id',
+                canActivate: [AgentTypeGuard],
+                data: { agentTypes: ['sales'] },
                 loadChildren: () => import('app/modules/admin/marketing/marketing.routes')
             },
             {
@@ -96,8 +109,14 @@ export const appRoutes: Route[] = [
                 loadChildren: () => import('app/modules/admin/users/users.routes')
             },
             {
-                path: 'qr-codes',
-                loadChildren: () => import('app/modules/admin/qr-codes/qr-codes.routes')
+                path: 'access/:agent_id',
+                canActivate: [AgentTypeGuard],
+                data: { agentTypes: ['receptionist','sales'] },
+                loadChildren: () => import('app/modules/admin/access/access.routes')
+            },
+            {
+                path: 'availability/:agent_id',
+                loadChildren: () => import('app/modules/admin/availability/availability.routes')
             },
         ]
     }

@@ -11,5 +11,20 @@ export class AppComponent {
     /**
      * Constructor
      */
-    constructor() {}
+    constructor() {
+        this.getLocation();
+    }
+
+   getLocation(): void{
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position)=>{
+              const longitude = position.coords.longitude;
+              const latitude = position.coords.latitude;
+              console.log(longitude, latitude);
+            });
+        } else {
+           console.log("No support for geolocation")
+        }
+      }
 }
+

@@ -1,15 +1,5 @@
 <div class="mt-8" [formGroup]="parentForm">
-    <!-- Add disclaimer button -->
-    <div class="flex justify-end mb-6">
-        <button
-            mat-flat-button
-            [color]="'primary'"
-            (click)="addDisclaimer()"
-        >
-            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-            <span class="ml-2">Add Disclaimer</span>
-        </button>
-    </div>
+
 
     <!-- Disclaimers list -->
     <div formArrayName="disclaimers">
@@ -24,8 +14,7 @@
                 <button
                     mat-icon-button
                     [matTooltip]="'Delete'"
-                    (click)="removeDisclaimer(i)"
-                >
+                    (click)="removeDisclaimer(i)">
                     <mat-icon
                         class="text-red-500"
                         [svgIcon]="'heroicons_outline:trash'"
@@ -36,22 +25,51 @@
             <!-- Disclaimer text -->
             <mat-form-field class="mt-4">
                 <mat-label>Text</mat-label>
-                <textarea
-                    matInput
-                    formControlName="text"
-                    [placeholder]="'Enter disclaimer text'"
-                    [rows]="3"
-                ></textarea>
+                <input type="text" matInput formControlName="text" [placeholder]="'Enter disclaimer text'">
             </mat-form-field>
 
             <!-- Require permission -->
             <mat-checkbox
                 formControlName="requirePermission"
                 [color]="'primary'"
-                class="mt-2"
-            >
+                class="mt-2">
                 Require explicit permission from user
             </mat-checkbox>
         </div>
     </div>
+
+    <div *ngIf="!parentForm.get('disclaimers').value?.length"
+    class="flex flex-col items-center justify-center p-8 bg-gray-100 rounded-2xl dark:bg-gray-800 dark:text-white">
+        <div class="mt-4 text-gray-600 text-center">
+            <p class="font-medium">No disclaimers added yet</p>
+        </div>
+    </div>
+
+        <!-- Add disclaimer button -->
+        <div class="flex justify-end mb-6">
+            <button
+                mat-flat-button
+                [color]="'primary'"
+                (click)="addDisclaimer()"
+            >
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                <span class="ml-2">Add Disclaimer</span>
+            </button>
+        </div>
+
+    <!-- Tips Section -->
+    <fuse-alert
+        class="mt-6"
+        [appearance]="'outline'"
+        [type]="'basic'"
+        [showIcon]="false"
+    >
+        <span fuseAlertTitle>About Disclaimers</span>
+        <div class="space-y-2">
+            <p>Disclaimers are short statements that the agent will say before starting a conversation.
+                Use them to inform users about data collection, limitations, and anything you would like them to know before
+                interacting with the agent.
+            </p>
+        </div>
+    </fuse-alert>
 </div>

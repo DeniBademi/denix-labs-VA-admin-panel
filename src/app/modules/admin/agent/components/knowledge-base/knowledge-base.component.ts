@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +12,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { KnowledgeBaseService, KnowledgeBaseFile as KBFile } from '../../services/knowledge-base.service';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
+import { ActivatedRoute } from '@angular/router';
+import { BaseAgentComponent } from '../../shared/base-agent-component';
 
 interface KnowledgeBaseFile {
     name: string;
@@ -37,32 +39,37 @@ interface KnowledgeBaseFile {
         MatSnackBarModule
     ]
 })
-export class KnowledgeBaseComponent implements OnInit {
-    @Input() parentForm: FormGroup;
+export class KnowledgeBaseComponent extends BaseAgentComponent {
     acceptedFileTypes = '.pdf';
     isUploading = false;
 
     constructor(
+        protected override _route: ActivatedRoute,
+        protected override _snackBar: MatSnackBar,
         private _httpClient: HttpClient,
-        private _snackBar: MatSnackBar,
         private _kbService: KnowledgeBaseService,
         private _confirmation: FuseConfirmationService
-    ) {}
+    ) {
+        super(_route, _snackBar);
+    }
 
-    ngOnInit(): void {
-        // Load initial data
+    protected onAgentComponentInit(): void {
         this.loadKnowledgeBase();
+    }
+
+    protected onAgentIdChanged(agentId: string | null): void {
+        if (agentId) {
+            this._kbService.setAgentId(agentId);
+            this.loadKnowledgeBase();
+        }
     }
 
     private async loadKnowledgeBase(): Promise<void> {
         try {
             const files = await firstValueFrom(this._kbService.listFiles());
-            this.parentForm.get('knowledgeBase').setValue(files);
+            this.setFormValue('knowledgeBase', files);
         } catch (error) {
-            this._snackBar.open('Failed to load knowledge base', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end'
-            });
+            this.showError('Failed to load knowledge base');
         }
     }
 
@@ -73,10 +80,7 @@ export class KnowledgeBaseComponent implements OnInit {
             if (file.type === 'application/pdf') {
                 this.uploadFile(file);
             } else {
-                this._snackBar.open('Only PDF files are allowed', 'Close', {
-                    duration: 3000,
-                    horizontalPosition: 'end'
-                });
+                this.showError('Only PDF files are allowed');
             }
             // Clear the input
             input.value = '';
@@ -88,18 +92,12 @@ export class KnowledgeBaseComponent implements OnInit {
 
         try {
             const uploaded = await firstValueFrom(this._kbService.uploadFile(file));
-            const current: KnowledgeBaseFile[] = this.parentForm.get('knowledgeBase').value ?? [];
-            this.parentForm.get('knowledgeBase').setValue([...current, uploaded]);
+            const current: KnowledgeBaseFile[] = this.getFormValue('knowledgeBase') ?? [];
+            this.setFormValue('knowledgeBase', [...current, uploaded]);
 
-            this._snackBar.open('File uploaded successfully', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end'
-            });
+            this.showSuccess('File uploaded successfully');
         } catch (error) {
-            this._snackBar.open('Failed to upload file', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end'
-            });
+            this.showError('Failed to upload file');
         } finally {
             this.isUploading = false;
         }
@@ -123,10 +121,7 @@ export class KnowledgeBaseComponent implements OnInit {
             a.remove();
             URL.revokeObjectURL(objectUrl);
         } catch (e) {
-            this._snackBar.open('Failed to download file', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end'
-            });
+            this.showError('Failed to download file');
         }
     }
 
@@ -146,18 +141,12 @@ export class KnowledgeBaseComponent implements OnInit {
             }
             try {
                 await firstValueFrom(this._kbService.deleteFile(file.url));
-                const current: KnowledgeBaseFile[] = this.parentForm.get('knowledgeBase').value ?? [];
-                this.parentForm.get('knowledgeBase').setValue(current.filter(f => f.url !== file.url));
+                const current: KnowledgeBaseFile[] = this.getFormValue('knowledgeBase') ?? [];
+                this.setFormValue('knowledgeBase', current.filter(f => f.url !== file.url));
 
-                this._snackBar.open('File deleted successfully', 'Close', {
-                    duration: 3000,
-                    horizontalPosition: 'end'
-                });
+                this.showSuccess('File deleted successfully');
             } catch (error) {
-                this._snackBar.open('Failed to delete file', 'Close', {
-                    duration: 3000,
-                    horizontalPosition: 'end'
-                });
+                this.showError('Failed to delete file');
             }
         });
     }

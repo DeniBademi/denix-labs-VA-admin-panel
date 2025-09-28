@@ -11,6 +11,23 @@ export class LivekitRoomService {
 	private readonly _error$ = new Subject<EmbedErrorDetails>();
 	private readonly _remoteAudioTracks = new Set<MediaStreamTrack>();
 
+	private isMediaDevicesAvailable(): boolean {
+		// getUserMedia is only available in secure contexts (HTTPS) or on localhost
+		try {
+			return (
+				typeof navigator !== 'undefined' &&
+				!!navigator.mediaDevices &&
+				typeof navigator.mediaDevices.getUserMedia === 'function'
+			);
+		} catch {
+			return false;
+		}
+	}
+
+	private insecureContextHint(): string {
+		return 'Microphone access requires a secure context. Use https:// or http://localhost (not 0.0.0.0). If accessing over LAN, serve with HTTPS.';
+	}
+
 	public readonly micEnabled$ = this._micEnabled$.asObservable();
 	public readonly micPending$ = this._micPending$.asObservable();
 	public readonly error$ = this._error$.asObservable();
@@ -27,11 +44,19 @@ export class LivekitRoomService {
 	async connect(details: ConnectionDetails, appConfig?: AppConfig): Promise<void> {
 		try {
 			await this._room.connect(details.serverUrl, details.participantToken);
-			this._micPending$.next(true);
-			await this._room.localParticipant.setMicrophoneEnabled(true, undefined, {
-				preConnectBuffer: appConfig?.isPreConnectBufferEnabled ?? false,
-			});
-			this._micEnabled$.next(true);
+			if (this.isMediaDevicesAvailable()) {
+				this._micPending$.next(true);
+				await this._room.localParticipant.setMicrophoneEnabled(true, undefined, {
+					preConnectBuffer: appConfig?.isPreConnectBufferEnabled ?? false,
+				});
+				this._micEnabled$.next(true);
+			} else {
+				this._error$.next({
+					title: 'Microphone not available',
+					description: this.insecureContextHint(),
+				});
+				console.warn('[LivekitRoomService] Media devices not available. Skipping mic enable.');
+			}
 		} catch (e) {
 			const err = e as Error;
 			this._error$.next({
@@ -51,6 +76,13 @@ export class LivekitRoomService {
 	}
 
 	async toggleMicrophone(): Promise<void> {
+		if (!this.isMediaDevicesAvailable()) {
+			this._error$.next({
+				title: 'Microphone not available',
+				description: this.insecureContextHint(),
+			});
+			return;
+		}
 		try {
 			this._micPending$.next(true);
 			const enabled = this._room.localParticipant.isMicrophoneEnabled;
@@ -62,6 +94,13 @@ export class LivekitRoomService {
 	}
 
 	async switchAudioInput(deviceId: string): Promise<void> {
+		if (!this.isMediaDevicesAvailable()) {
+			this._error$.next({
+				title: 'Cannot switch audio input',
+				description: this.insecureContextHint(),
+			});
+			return;
+		}
 		await this._room.switchActiveDevice('audioinput', deviceId);
 	}
 

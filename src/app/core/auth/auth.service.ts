@@ -63,13 +63,19 @@ export class AuthService {
      *
      * @param credentials
      */
-    signIn(credentials: { email: string; password: string }): Observable<any> {
+    signIn(credentials: { email: string; password: string }, captchaToken: string): Observable<any> {
         // Throw error, if the user is already logged in
         if (this._authenticated) {
             return throwError('User is already logged in.');
         }
 
-        return from(this._supabaseService.getSupabase.auth.signInWithPassword(credentials)).pipe(
+        return from(this._supabaseService.getSupabase.auth.signInWithPassword({
+            email: credentials.email,
+            password: credentials.password,
+            options: {
+                captchaToken: captchaToken
+            }
+        })).pipe(
             switchMap(async ({ data, error }) => {
                 if (error) {
                     throw error;
@@ -91,6 +97,7 @@ export class AuthService {
                     .select('role, permissions')
                     .eq('id', data.user.id)
                     .maybeSingle();
+                console.log(accessRow);
 
                 const role = accessRow?.role ?? 'user';
                 const permissions = Array.isArray(accessRow?.permissions) ? accessRow.permissions : [];
@@ -206,6 +213,7 @@ export class AuthService {
         email: string;
         password: string;
         company: string;
+        captchaToken: string;
     }): Observable<any> {
         // Call Supabase signUp with email and password
         return from(
@@ -216,8 +224,9 @@ export class AuthService {
                     data: {
                         name: user.name,
                         company: user.company
-                    }
-                }
+                    },
+                    captchaToken: user.captchaToken
+                },
             })
         );
     }

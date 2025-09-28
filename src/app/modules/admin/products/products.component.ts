@@ -21,6 +21,8 @@ import { CategoryDialogComponent } from './category-dialog/category-dialog.compo
 import { ProductsService } from './products.service';
 import { Subject, takeUntil } from 'rxjs';
 import { HasPermissionDirective } from 'app/core/auth/directives/has-permission.directive';
+import { ActivatedRoute } from '@angular/router';
+import { map, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
     selector: 'app-products',
@@ -74,7 +76,8 @@ export class ProductsComponent implements OnInit {
     constructor(
         private _productsService: ProductsService,
         private _fuseConfirmationService: FuseConfirmationService,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _route: ActivatedRoute
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -85,6 +88,20 @@ export class ProductsComponent implements OnInit {
      * On init
      */
     ngOnInit(): void {
+
+        // React to agent_id route changes
+        this._route.paramMap
+            .pipe(
+                map((pm) => pm.get('agent_id')),
+                distinctUntilChanged(),
+            )
+            .subscribe((agentId) => {
+                this._productsService.setAgentId(agentId);
+                // Refresh lists for the new agent
+                this._productsService.getCategories().subscribe();
+                this.filter.page = 0;
+                this.getProducts();
+            });
         // Get categories
         this._productsService.categories$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -112,9 +129,7 @@ export class ProductsComponent implements OnInit {
                 if (pg.page !== undefined) this.filter.page = pg.page;
             });
 
-        // Load initial data
-        this._productsService.getCategories().subscribe();
-        this.getProducts();
+        // Initial load happens via the paramMap subscription
     }
 
     /**

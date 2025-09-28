@@ -6,9 +6,5 @@ export default [
     {
         path: '',
         component: DashboardComponent,
-        canActivate: [RoleGuard],
-        data: {
-            permissions: ['view_dashboard']
-        }
     }
 ] as Routes;

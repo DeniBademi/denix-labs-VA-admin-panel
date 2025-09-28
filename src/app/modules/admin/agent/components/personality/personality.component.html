@@ -1,57 +1,39 @@
 <div class="mt-8">
     <div [formGroup]="parentForm">
-        <div formGroupName="personality" class="flex flex-col space-y-4">
-            <!-- Name -->
-            <mat-form-field>
-                <mat-label>Name</mat-label>
-                <input
-                    matInput
-                    [formControlName]="'name'"
-                    [placeholder]="'Enter agent name'"
-                >
-            </mat-form-field>
-
-            <!-- Role -->
-            <mat-form-field>
-                <mat-label>Role</mat-label>
-                <input
-                    matInput
-                    [formControlName]="'role'"
-                    [placeholder]="'Enter agent role'"
-                >
-            </mat-form-field>
-
-            <!-- Background -->
-            <mat-form-field>
-                <mat-label>Background</mat-label>
-                <textarea
-                    matInput
-                    [formControlName]="'background'"
-                    [placeholder]="'Enter agent background'"
-                    [rows]="3"
-                ></textarea>
-            </mat-form-field>
-
-            <!-- Traits -->
-            <mat-form-field>
-                <mat-label>Traits</mat-label>
-                <mat-chip-grid #traitChipGrid [formControlName]="'traits'">
-                    <mat-chip-row
-                        *ngFor="let trait of parentForm.get('personality.traits').value"
-                        [removable]="true"
-                        (removed)="removeTrait(trait)"
-                    >
-                        {{trait}}
-                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                    </mat-chip-row>
-                </mat-chip-grid>
-                <input
-                    [matChipInputFor]="traitChipGrid"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addTrait($event)"
-                    [placeholder]="'Add trait...'"
-                >
-            </mat-form-field>
-        </div>
+        <mat-form-field class="w-full">
+            <mat-label>Personality</mat-label>
+            <textarea
+                matInput
+                [formControlName]="'personality'"
+                [rows]="6"
+                placeholder="Describe the agent's personality"
+            ></textarea>
+        </mat-form-field>
     </div>
+    <!-- Tips Section -->
+    <fuse-alert
+        class="mt-6"
+        [appearance]="'outline'"
+        [type]="'basic'"
+        [showIcon]="false"
+    >
+        <span fuseAlertTitle>About Personality</span>
+        <div class="space-y-2">
+            <p>The base personality is the foundation of your voice agent’s identity, defining who the agent is supposed to emulate through a name, role, background, and key traits. It ensures consistent, authentic responses in every interaction.</p>
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Identity:</b> Give your agent a simple, memorable name (e.g. “Joe”) and establish the essential identity (e.g. “a compassionate AI support assistant”).
+                </li>
+                <li>
+                    <b>Core traits:</b> List only the qualities that shape interactions-such as empathy, politeness, humor, or reliability.
+                </li>
+                <li>
+                    <b>Role:</b> Connect these traits to the agent’s function (banking, therapy, retail, education, etc.). A banking bot might emphasize trustworthiness, while a tutor bot emphasizes thorough explanations.
+                </li>
+                <li>
+                    <b>Backstory:</b> Include a brief background if it impacts how the agent behaves (e.g. “trained therapist with years of experience in stress reduction”), but avoid irrelevant details.
+                </li>
+            </ul>
+            </div>
+        </fuse-alert>
 </div>

@@ -5,5 +5,6 @@ export default [
     {
         path: '',
         component: AgentComponent,
+        // agent_id comes from parent route param
     },
 ] as Routes;

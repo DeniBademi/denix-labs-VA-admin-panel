@@ -92,6 +92,8 @@
                     <mat-error> Password is required </mat-error>
                 </mat-form-field>
 
+                <!-- Captcha -->
+                <div id="turnstile-container"></div>
                 <!-- Actions -->
                 <div
                     class="mt-1.5 inline-flex w-full items-center justify-between"
@@ -115,7 +117,7 @@
                     class="fuse-mat-button-large mt-6 w-full"
                     mat-flat-button
                     [color]="'primary'"
-                    [disabled]="signInForm.disabled"
+                    [disabled]="signInForm.disabled || !captchaToken"
                     (click)="signIn()"
                 >
                     @if (!signInForm.disabled) {

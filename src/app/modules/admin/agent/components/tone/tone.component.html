@@ -1,59 +1,40 @@
 <div class="mt-8">
     <div [formGroup]="parentForm">
-        <div formGroupName="tone" class="flex flex-col space-y-4">
-            <!-- Style -->
-            <mat-form-field>
-                <mat-label>Style</mat-label>
-                <input
-                    matInput
-                    [formControlName]="'style'"
-                    [placeholder]="'Enter tone style'"
-                >
-            </mat-form-field>
-
-            <!-- Patterns -->
-            <mat-form-field>
-                <mat-label>Speech Patterns</mat-label>
-                <mat-chip-grid #patternChipGrid [formControlName]="'patterns'">
-                    <mat-chip-row
-                        *ngFor="let pattern of parentForm.get('tone.patterns').value"
-                        [removable]="true"
-                        (removed)="removePattern(pattern)"
-                    >
-                        {{pattern}}
-                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                    </mat-chip-row>
-                </mat-chip-grid>
-                <input
-                    [matChipInputFor]="patternChipGrid"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addPattern($event)"
-                    [placeholder]="'Add speech pattern...'"
-                >
-                <mat-hint>Press Enter or comma to add pattern</mat-hint>
-            </mat-form-field>
-
-            <!-- Elements -->
-            <mat-form-field>
-                <mat-label>Conversational Elements</mat-label>
-                <mat-chip-grid #elementChipGrid [formControlName]="'elements'">
-                    <mat-chip-row
-                        *ngFor="let element of parentForm.get('tone.elements').value"
-                        [removable]="true"
-                        (removed)="removeElement(element)"
-                    >
-                        {{element}}
-                        <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                    </mat-chip-row>
-                </mat-chip-grid>
-                <input
-                    [matChipInputFor]="elementChipGrid"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addElement($event)"
-                    [placeholder]="'Add conversational element...'"
-                >
-                <mat-hint>Press Enter or comma to add element</mat-hint>
-            </mat-form-field>
-        </div>
+        <mat-form-field class="w-full">
+            <mat-label>Tone</mat-label>
+            <textarea
+                matInput
+                [formControlName]="'tone'"
+                [rows]="6"
+                placeholder="Describe the desired tone"
+            ></textarea>
+        </mat-form-field>
     </div>
+
+    <!-- Tips Section -->
+    <fuse-alert
+        class="mt-6"
+        [appearance]="'outline'"
+        [type]="'basic'"
+        [showIcon]="false"
+    >
+        <span fuseAlertTitle>About Tone</span>
+        <div class="space-y-2">
+            <p>Tone governs how your agent speaks and interacts, defining its conversational style. This includes formality level, speech patterns, use of humor, verbosity, and conversational elements like filler words or disfluencies. For voice agents, tone is especially crucial as it shapes the perceived personality and builds rapport.</p>
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Conversational elements:</b> Instruct your agent to include natural speech markers (brief affirmations like “Got it,” filler words like “actually” or “you know”) and occasional disfluencies (false starts, thoughtful pauses) to create authentic-sounding dialogue.
+                </li>
+                <li>
+                    <b>TTS compatibility:</b> Direct your agent to optimize for speech synthesis by using punctuation strategically (ellipses for pauses, emphasis marks for key points) and adapting text formats for natural pronunciation: spell out email addresses (“john dot smith at company dot com”), format phone numbers with pauses (“five five five… one two three… four five six seven”), convert numbers into spoken forms (“$19.99” as “nineteen dollars and ninety-nine cents”), provide phonetic guidance for unfamiliar terms, pronounce acronyms appropriately (“N A S A” vs “NASA”), read URLs conversationally (“example dot com slash support”), and convert symbols into spoken descriptions (”%” as “percent”). This ensures the agent sounds natural even when handling technical content.
+                </li>
+                <li>
+                    <b>Adaptability:</b> Specify how your agent should adjust to the user’s technical knowledge, emotional state, and conversational style. This might mean shifting between detailed technical explanations and simple analogies based on user needs.
+                </li>
+                <li>
+                    <b>User check-ins:</b> Instruct your agent to incorporate brief check-ins to ensure understanding (“Does that make sense?”) and modify its approach based on feedback.
+                </li>
+            </ul>
+        </div>
+    </fuse-alert>
 </div>

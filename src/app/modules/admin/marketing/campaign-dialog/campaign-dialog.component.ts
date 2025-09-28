@@ -96,12 +96,14 @@ export class CampaignDialogComponent implements OnInit {
                 }
             ]
         });
-
+        console.log(this.campaignForm.value);
         // Get categories
         this._productsService.categories$.subscribe((categories) => {
+            console.log(categories);
             this.categories = this._buildCategoryTree(categories);
         });
         this._productsService.getCategories().subscribe();
+
 
         // Get products
         this._productsService.products$.subscribe((products) => {

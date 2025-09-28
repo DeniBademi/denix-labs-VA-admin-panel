@@ -1,7 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { User, Permission } from 'app/core/user/user.types';
-import { BehaviorSubject, map, Observable, ReplaySubject, tap, from } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, tap, from } from 'rxjs';
 import { SupabaseService } from '../supabase/supabase.service';
 import { WorkspaceService } from '../workspace/workspace.service';
 
@@ -13,12 +12,13 @@ export interface Role {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private _httpClient = inject(HttpClient);
     private _user: ReplaySubject<User> = new ReplaySubject<User>(1);
     private _users: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
     private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
     private _supabaseService = inject(SupabaseService);
     private _workspaceService = inject(WorkspaceService);
+
+    private _userCache: User | null = null;
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -32,6 +32,7 @@ export class UserService {
     set user(value: User) {
         // Store the value
         this._user.next(value);
+        this._userCache = value;
     }
 
     get user$(): Observable<User> {
@@ -52,11 +53,45 @@ export class UserService {
      * Get the current signed-in user data
      */
     get(): Observable<User> {
-        return this._httpClient.get<User>('api/common/user').pipe(
-            tap((user) => {
-                this._user.next(user);
-            })
-        );
+
+        if (this._userCache) {
+            console.log('returning from cache');
+            return from(Promise.resolve(this._userCache));
+        }
+        return from((async () => {
+            const supabase = this._supabaseService.getSupabase;
+            const { data: sessionData } = await supabase.auth.getSession();
+            const userId = sessionData.session?.user?.id;
+            if (!userId) {
+                throw new Error('Not authenticated');
+            }
+            const { data, error } = await supabase
+                .from('users_view')
+                .select('id, name, email, avatar, role, permissions')
+                .eq('id', userId)
+                .maybeSingle();
+
+            if (error) throw error;
+            const user: User = data ? {
+                id: data.id,
+                name: data.name ?? '',
+                email: data.email ?? '',
+                avatar: data.avatar ?? '',
+                role: data.role ?? 'user',
+                permissions: Array.isArray(data.permissions) ? data.permissions : []
+            } : {
+                id: userId,
+                name: '',
+                email: '',
+                avatar: '',
+                role: 'user',
+                permissions: []
+            };
+            console.log(user);
+            this._user.next(user);
+            this._userCache = user;
+            return user;
+        })());
     }
 
     /**
@@ -65,11 +100,37 @@ export class UserService {
      * @param user
      */
     update(user: User): Observable<any> {
-        return this._httpClient.patch<User>('api/common/user', { user }).pipe(
-            map((response) => {
-                this._user.next(response);
-            })
-        );
+        return from((async () => {
+            const supabase = this._supabaseService.getSupabase;
+            const updates: any = {};
+            if (user.name !== undefined) updates.name = user.name;
+            if (user.avatar !== undefined) updates.avatar_url = user.avatar;
+
+            if (Object.keys(updates).length > 0) {
+                const { error: updErr } = await supabase
+                    .from('profiles')
+                    .update(updates)
+                    .eq('id', user.id);
+                if (updErr) throw updErr;
+            }
+
+            // Re-fetch
+            const { data } = await supabase
+                .from('users_view')
+                .select('id, name, email, avatar, role, permissions')
+                .eq('id', user.id)
+                .maybeSingle();
+            const updated: User = data ? {
+                id: data.id,
+                name: data.name ?? '',
+                email: data.email ?? '',
+                avatar: data.avatar ?? '',
+                role: data.role ?? 'user',
+                permissions: Array.isArray(data.permissions) ? data.permissions : []
+            } : user;
+            this._user.next(updated);
+            return updated;
+        })());
     }
 
     /**
@@ -295,15 +356,48 @@ export class UserService {
      * Assign a role to a user
      */
     assignRole(userId: string, roleId: string): Observable<User> {
-        return this._httpClient.post<User>(`api/users/${userId}/roles`, { roleId }).pipe(
-            tap((updatedUser) => {
+        return from((async () => {
+            const supabase = this._supabaseService.getSupabase;
+            const workspaceId = await this._workspaceService.getWorkspaceId();
+            if (!workspaceId) throw new Error('Workspace not set');
+
+            // Clear current primary and set new primary role for this workspace
+            await supabase
+                .from('user_roles')
+                .update({ is_primary: false })
+                .eq('user_id', userId)
+                .eq('workspace_id', workspaceId)
+                .eq('is_primary', true);
+
+            await supabase
+                .from('user_roles')
+                .upsert({ user_id: userId, workspace_id: workspaceId, role_id: roleId, is_primary: true }, { onConflict: 'user_id,workspace_id,role_id' });
+
+            const { data, error } = await supabase
+                .from('users_view')
+                .select('id, name, email, avatar, role, permissions')
+                .eq('id', userId)
+                .maybeSingle();
+            if (error) throw error;
+            const updatedUser: User = data ? {
+                id: data.id,
+                name: data.name ?? '',
+                email: data.email ?? '',
+                avatar: data.avatar ?? '',
+                role: data.role ?? 'user',
+                permissions: Array.isArray(data.permissions) ? data.permissions : []
+            } : null;
+
+            if (updatedUser) {
                 const currentUsers = this._users.value;
                 const index = currentUsers.findIndex(u => u.id === updatedUser.id);
                 if (index !== -1) {
                     currentUsers[index] = updatedUser;
                     this._users.next([...currentUsers]);
                 }
-            })
-        );
+                return updatedUser;
+            }
+            throw new Error('Failed to load updated user');
+        })());
     }
 }

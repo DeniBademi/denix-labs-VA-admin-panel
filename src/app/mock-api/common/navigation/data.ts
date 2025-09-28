@@ -38,11 +38,11 @@ export const defaultNavigation: FuseNavigationItem[] = [
         link: '/users',
     },
     {
-        id: 'qr-codes',
-        title: 'QR Codes',
+        id: 'access',
+        title: 'Access',
         type: 'basic',
-        icon: 'heroicons_outline:qr-code',
-        link: '/qr-codes',
+        icon: 'heroicons_outline:cursor-arrow-rays',
+        link: '/access',
     }
 ];
 

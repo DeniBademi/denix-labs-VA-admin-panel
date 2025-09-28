@@ -59,7 +59,7 @@
   <va-room-audio-renderer></va-room-audio-renderer>
 
   <div class="error-message" *ngIf="currentError">{{ currentError?.title }}</div>
-  <div class="text-center" *ngIf="currentStatus">{{ currentStatus }}</div>
+  <div class="text-center mt-2" *ngIf="currentStatus">{{ currentStatus }}</div>
   <div class="text-center mt-2" *ngIf="needsAudioStart">
     <button class="rounded-full border px-3 py-1" (click)="onStartAudioClick()">Start Audio</button>
   </div>

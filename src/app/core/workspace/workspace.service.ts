@@ -53,7 +53,19 @@ export class WorkspaceService {
                 this.setWorkspaceId(null);
                 return null;
             }
-            const wsId = data?.workspace_id ?? null;
+            let wsId = data?.workspace_id ?? null;
+
+            // If the user has no workspace, provision one via secure RPC (first-time registration)
+            if (!wsId) {
+                try {
+                    const { data: rpcData, error: rpcErr } = await supabase.rpc('provision_workspace_for_current_user');
+                    if (rpcErr) throw rpcErr;
+                    wsId = rpcData as string;
+                } catch (e) {
+                    wsId = null;
+                }
+            }
+
             this.setWorkspaceId(wsId);
             return wsId;
         } finally {
@@ -73,6 +85,8 @@ export class WorkspaceService {
     async initForCurrentUser(): Promise<string | null> {
         return this.getWorkspaceId();
     }
+
+    // Workspace provisioning is handled by RPC 'provision_workspace_for_current_user'
 }
 
 

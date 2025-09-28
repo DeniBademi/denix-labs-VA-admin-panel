@@ -11,11 +11,13 @@ export class KnowledgeBaseProcessorService {
      * Triggers server-side processing (text extraction, chunking, embeddings, persistence)
      * via the Supabase Edge Function 'super-responder'.
      */
-    async processSource(workspaceId: string, sourceId: string, uri: string): Promise<void> {
+    async processSource(workspaceId: string, agentId: string, sourceId: string, uri: string): Promise<void> {
         const supabase = this._supabase.getSupabase;
-        const { error, data } = await supabase.functions.invoke('super-responder', {
+
+        const { error, data } = await supabase.functions.invoke('chunk_document', {
             body: {
                 workspace_id: workspaceId,
+                agent_id: agentId,
                 source_id: sourceId,
                 file_path: uri
             }

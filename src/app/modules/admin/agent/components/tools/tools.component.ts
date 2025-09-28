@@ -1,12 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { ActivatedRoute } from '@angular/router';
+import { BaseChipInputComponent } from '../../shared/base-chip-input-component';
 
 @Component({
     selector: 'app-tools',
@@ -23,30 +24,17 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
         MatChipsModule
     ]
 })
-export class ToolsComponent {
-    @Input() parentForm: FormGroup;
-    separatorKeysCodes: number[] = [ENTER, COMMA];
+export class ToolsComponent extends BaseChipInputComponent {
+    constructor(protected override _route: ActivatedRoute) {
+        super(_route);
+    }
 
     addTool(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim();
-
-        if (value) {
-            const currentTools = this.parentForm.get('tools').value || [];
-            this.parentForm.get('tools').setValue([...currentTools, value]);
-        }
-
-        event.chipInput!.clear();
+        this.addChip(event, 'tools');
     }
 
     removeTool(tool: string): void {
-        const currentTools = this.parentForm.get('tools').value || [];
-        const index = currentTools.indexOf(tool);
-
-        if (index >= 0) {
-            const updatedTools = [...currentTools];
-            updatedTools.splice(index, 1);
-            this.parentForm.get('tools').setValue(updatedTools);
-        }
+        this.removeChip(tool, 'tools');
     }
 
     getToolIcon(tool: string): string {

@@ -1,0 +1,55 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="mb-8 flex items-end justify-between gap-4">
+            <div>
+                <div class="text-3xl font-semibold tracking-tight leading-8">Access</div>
+                <div class="font-medium tracking-tight text-secondary">Configure how your customers can access your voice agent.</div>
+            </div>
+            <mat-button-toggle-group name="accessView" [(ngModel)]="selected" class="rounded-lg overflow-hidden border border-[var(--color-border)]">
+                <mat-button-toggle [value]="'qr'">
+                    <mat-icon [svgIcon]="'heroicons_outline:qr-code'" class="mr-2"></mat-icon>
+                    QR Code
+                </mat-button-toggle>
+                <mat-button-toggle [value]="'widget'">
+                    <mat-icon [svgIcon]="'heroicons_outline:window'" class="mr-2"></mat-icon>
+                    Website widget
+                </mat-button-toggle>
+                <mat-button-toggle [value]="'pbx'" disabled>
+                    <mat-icon [svgIcon]="'heroicons_outline:phone'" class="mr-2"></mat-icon>
+                    PBX (Coming soon)
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
+        <div>
+            <ng-container [ngSwitch]="selected">
+                <section *ngSwitchCase="'qr'" class="space-y-4">
+                    <div class="mb-2">
+                        <div class="text-xl font-semibold">QR Code</div>
+                        <div class="text-md text-secondary">Create and style a QR code to share access.</div>
+                    </div>
+                    <app-qr-code-tab></app-qr-code-tab>
+                </section>
+
+                <section *ngSwitchCase="'widget'" class="space-y-4">
+                    <div class="mb-2">
+                        <div class="text-xl font-semibold">Website widget</div>
+                        <div class="text-md text-secondary">Customize the widget and copy the embed code.</div>
+                    </div>
+                    <app-widget-tab></app-widget-tab>
+                </section>
+
+                <section *ngSwitchCase="'pbx'" class="space-y-4">
+                    <div class="mb-2">
+                        <div class="text-xl font-semibold">PBX</div>
+                        <div class="text-md text-secondary">This section is under construction.</div>
+                    </div>
+                    <div class="bg-card rounded-2xl shadow p-6">
+                        <div class="text-md text-secondary">We’re working on seamless PBX integration. Stay tuned.</div>
+                    </div>
+                </section>
+            </ng-container>
+        </div>
+    </div>
+</div>
+

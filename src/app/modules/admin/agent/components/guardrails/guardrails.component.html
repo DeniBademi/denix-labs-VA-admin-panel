@@ -1,43 +1,42 @@
 <div class="mt-8">
     <div [formGroup]="parentForm">
-        <div class="prose prose-sm mb-6">
-            <p>
-                Define boundaries and limitations for the agent's behavior to ensure appropriate and ethical interactions.
-            </p>
-        </div>
-
         <!-- Guardrails -->
         <mat-form-field class="w-full">
             <mat-label>Guardrails</mat-label>
-            <mat-chip-grid #guardrailChipGrid [formControlName]="'guardrails'">
-                <mat-chip-row
-                    *ngFor="let guardrail of parentForm.get('guardrails').value"
-                    [removable]="true"
-                    (removed)="removeGuardrail(guardrail)"
-                >
-                    {{guardrail}}
-                    <mat-icon matChipRemove [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                </mat-chip-row>
-            </mat-chip-grid>
-            <input
-                [matChipInputFor]="guardrailChipGrid"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addGuardrail($event)"
-                [placeholder]="'Add guardrail...'"
-            >
-            <mat-hint>Examples: "Never make medical claims", "Stay within product specifications", "Maintain professional boundaries"</mat-hint>
+            <textarea
+                matInput
+                [formControlName]="'guardrails'"
+                [rows]="6"
+                placeholder="Constraints, do's and don'ts"
+            ></textarea>
         </mat-form-field>
 
         <!-- Tips -->
-        <div class="mt-8 rounded-lg border border-gray-300 p-4">
-            <div class="font-medium mb-2">Tips for effective guardrails:</div>
-            <ul class="list-disc ml-4 text-sm space-y-1">
-                <li>Be specific and clear about what the agent should not do</li>
-                <li>Focus on ethical and professional boundaries</li>
-                <li>Include data privacy and security considerations</li>
-                <li>Consider regulatory compliance requirements</li>
-                <li>Define limits of expertise and authority</li>
+        <fuse-alert
+            class="mt-6"
+            [appearance]="'outline'"
+            [type]="'basic'"
+            [showIcon]="false"
+        >
+        <span fuseAlertTitle>About Guardrails</span>
+        <div class="space-y-2">
+            <p>Guardrails define boundaries and rules for your agent, preventing inappropriate responses and guiding behavior in sensitive situations. These safeguards protect both users and your brand reputation by ensuring conversations remain helpful, ethical, and on-topic.</p>
+
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Content boundaries:</b> Clearly specify topics your agent should avoid or handle with care and how to gracefully redirect such conversations.
+                </li>
+                <li>
+                    <b>Error handling:</b> Provide instructions for when your agent lacks knowledge or certainty, emphasizing transparency over fabrication. Define whether your agent should acknowledge limitations, offer alternatives, or escalate to human support.
+                </li>
+                <li>
+                    <b>Persona maintenance:</b> Establish guidelines to keep your agent in character and prevent it from breaking immersion by discussing its AI nature or prompt details unless specifically required.
+                </li>
+                <li>
+                    <b>Response constraints:</b> Set appropriate limits on verbosity, personal opinions, or other aspects that might negatively impact the conversation flow or user experience.
+                </li>
             </ul>
         </div>
+        </fuse-alert>
     </div>
 </div>

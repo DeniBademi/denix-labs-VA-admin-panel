@@ -12,6 +12,7 @@ export class MarketingService {
         page: 0,
         limit: 10
     });
+    private _agentId: string | null = null;
 
     /**
      * Constructor
@@ -20,6 +21,13 @@ export class MarketingService {
         private _supabase: SupabaseService,
         private _workspace: WorkspaceService
     ) {}
+
+    /**
+     * Set current agent context (subroute param)
+     */
+    setAgentId(agentId: string | null): void {
+        this._agentId = agentId;
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -47,14 +55,18 @@ export class MarketingService {
      * Get campaigns
      */
     getCampaigns(filter?: CampaignFilter): Observable<CampaignsResponse> {
-        return from(this._workspace.getWorkspaceId()).pipe(
+        return from(Promise.resolve(this._agentId)).pipe(
             // eslint-disable-next-line rxjs/no-ignored-observable
-            switchMap((wsId) => {
+            switchMap((agentId) => {
+                if (!agentId) {
+                    const limit = filter?.limit ?? 10;
+                    return from(Promise.resolve({ campaigns: [], total: 0, page: 0, limit } as CampaignsResponse));
+                }
                 const supabase = this._supabase.getSupabase;
                 let query = supabase
-                    .from('campaigns')
+                    .from('sales_campaigns')
                     .select('*', { count: 'exact' })
-                    .eq('workspace_id', wsId);
+                    .eq('agent_id', agentId);
 
                 if (filter?.search) {
                     query = query.ilike('name', `%${filter.search}%`);
@@ -111,7 +123,7 @@ export class MarketingService {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
             const { data, error } = await supabase
-                .from('campaigns')
+                .from('sales_campaigns')
                 .select('*')
                 .eq('id', id)
                 .single();
@@ -126,12 +138,12 @@ export class MarketingService {
     createCampaign(campaign: Partial<Campaign>): Observable<Campaign> {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
-            const wsId = await this._workspace.getWorkspaceId();
+            const agentId = this._agentId;
+            if (!agentId) throw new Error('Agent not set');
             const payload = this._mapCampaignToDb(campaign);
-
-            payload.workspace_id = wsId;
+            payload.agent_id = agentId;
             const { data, error } = await supabase
-                .from('campaigns')
+                .from('sales_campaigns')
                 .insert(payload)
                 .select('*')
                 .single();
@@ -151,7 +163,7 @@ export class MarketingService {
             const supabase = this._supabase.getSupabase;
             const payload = this._mapCampaignToDb(campaign);
             const { data, error } = await supabase
-                .from('campaigns')
+                .from('sales_campaigns')
                 .update(payload)
                 .eq('id', id)
                 .select('*')
@@ -175,7 +187,7 @@ export class MarketingService {
         return from((async () => {
             const supabase = this._supabase.getSupabase;
             const { error } = await supabase
-                .from('campaigns')
+                .from('sales_campaigns')
                 .delete()
                 .eq('id', id);
             if (error) throw error;

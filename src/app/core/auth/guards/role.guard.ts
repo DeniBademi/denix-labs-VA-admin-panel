@@ -23,7 +23,7 @@ export const RoleGuard: CanActivateFn | CanActivateChildFn = (route, state) => {
                     const urlTree = router.parseUrl(`sign-in?${redirectURL}`);
                     return of(urlTree);
                 }
-
+                console.log('checking permissions');
                 // Get user permissions
                 return userService.get().pipe(
                     switchMap((user) => {

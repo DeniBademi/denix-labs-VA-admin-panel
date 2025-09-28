@@ -12,7 +12,9 @@ export class SupabaseService {
     private _isAuthenticated = new BehaviorSubject<boolean>(false);
 
     constructor() {
-        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+        this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey, {
+            auth: { persistSession: true, autoRefreshToken: true },
+          });
         // Check initial auth state
         this.supabase.auth.onAuthStateChange((event, session) => {
             this._isAuthenticated.next(!!session);

@@ -6,7 +6,7 @@ export function createQrForm(fb: FormBuilder): FormGroup {
     // Branding
     showLogo: [false],
     logoUrl: [''],
-    logoSize: [0.4],
+    logoSize: [0.6],
     logoMargin: [0],
     hideBackgroundDots: [true],
 

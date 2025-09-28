@@ -6,14 +6,25 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { AgentConfig, AgentService } from './agent.service';
+import { map, distinctUntilChanged } from 'rxjs/operators';
+import { AgentConfig, AgentService, AgentType } from './agent.service';
+import { MatRadioModule } from '@angular/material/radio';
+import { NavigationService } from 'app/core/navigation/navigation.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Import child components
 import { DisclaimersComponent } from './components/disclaimers/disclaimers.component';
 import { KnowledgeBaseComponent } from './components/knowledge-base/knowledge-base.component';
 import { AgentClientComponent } from './components/livekit-demo/agent-client/agent-client.component';
+import { KnowledgeBaseService } from './services/knowledge-base.service';
+import { GoalsComponent } from './components/goals/goals.component';
+import { GuardrailsComponent } from './components/guardrails/guardrails.component';
+import { ToolsComponent } from './components/tools/tools.component';
+import { PersonalityComponent } from './components/personality/personality.component';
+import { ToneComponent } from './components/tone/tone.component';
+import { EnvironmentComponent } from './components/environment/environment.component';
 
 @Component({
     selector: 'agent',
@@ -29,7 +40,15 @@ import { AgentClientComponent } from './components/livekit-demo/agent-client/age
         MatTabsModule,
         MatFormFieldModule,
         MatInputModule,
+        MatRadioModule,
         DisclaimersComponent,
+        GoalsComponent,
+        GuardrailsComponent,
+        KnowledgeBaseComponent,
+        // ToolsComponent,
+        PersonalityComponent,
+        EnvironmentComponent,
+        ToneComponent,
         KnowledgeBaseComponent,
         AgentClientComponent
     ],
@@ -46,17 +65,23 @@ export class AgentComponent implements OnInit, OnDestroy {
     constructor(
         private _agentService: AgentService,
         private _formBuilder: FormBuilder,
-        private _router: Router
+        private _router: Router,
+        private _navigationService: NavigationService,
+        private _route: ActivatedRoute,
+        private _knowledgeBaseService: KnowledgeBaseService,
+        private _snackBar: MatSnackBar
     ) {
         // Initialize the form
         this.configForm = this._formBuilder.group({
+            agentType: ['receptionist'],
             disclaimers: this._formBuilder.array([]),
             personality: [''],
             environment: [''],
             tone: [''],
             goals: [''],
             guardrails: [''],
-            knowledgeBase: [[]]
+            knowledgeBase: [[]],
+            availability: [null]
         });
     }
 
@@ -68,21 +93,35 @@ export class AgentComponent implements OnInit, OnDestroy {
      * On init
      */
     ngOnInit(): void {
-        // Get the config
+        // Optionally use agent_id from route params to pre-load specific agent in the future
+        this._route.paramMap
+            .pipe(
+                map((pm) => pm.get('agent_id')),
+                distinctUntilChanged(),
+                takeUntil(this._unsubscribeAll)
+            )
+            .subscribe((agentId) => {
+                if (!agentId) { return; }
+                this._agentService.setAgentId(agentId);
+                this._knowledgeBaseService.setAgentId(agentId);
+                this._agentService.getConfig().subscribe();
+            });
         this._agentService.config$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((config: AgentConfig) => {
                 this.config = config;
-
                 // Update form values
+                // console.log('Availability:', (config as any)?.availability);
                 this.configForm.patchValue({
+                    agentType: config?.agentType ?? 'receptionist',
                     personality: config?.personality,
                     environment: config?.environment,
                     tone: config?.tone,
                     goals: config?.goals,
                     guardrails: config?.guardrails,
+                    availability: (config as any)?.availability ?? { workHours: null }
                 });
-
+                // console.log('Availability:', this.configForm.get('availability')?.value);
                 // Handle disclaimers separately since it's a FormArray
                 const disclaimersArray = this.configForm.get('disclaimers') as FormArray;
                 if (disclaimersArray) {
@@ -99,7 +138,7 @@ export class AgentComponent implements OnInit, OnDestroy {
             });
 
         // Load initial data
-        this._agentService.getConfig().subscribe();
+        // config load handled by route param subscription
     }
 
     /**
@@ -124,7 +163,15 @@ export class AgentComponent implements OnInit, OnDestroy {
             const config = this.configForm.value;
 
             // Update the config
-            this._agentService.updateConfig(config).subscribe();
+            this._agentService.updateConfig(config).subscribe((updated) => {
+                // Re-apply navigation when agent type changes
+
+                //Show success message
+                this._snackBar.open('Config updated successfully', 'Close', {
+                    duration: 3000,
+                    horizontalPosition: 'end'
+                });
+            });
         }
     }
 

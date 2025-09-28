@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { QrCodesComponent } from './qr-codes.component';
+import { AccessComponent } from './access.component';
 export default [
     {
         path: '',
-        component: QrCodesComponent,
+        component: AccessComponent,
     },
 ] as Routes;
