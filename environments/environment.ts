@@ -6,6 +6,6 @@ export const environment = {
   livekitUrl: 'wss://denixlabs-ai-assistant-mpi783zj.livekit.cloud',
   turnstileSiteKeyProd: '0x4AAAAAAB3v8KqCDa3tSg1U',
   turnstileSiteKeyDev: '1x00000000000000000000AA',
-  turnstileSiteKey: '0x4AAAAAAB3v8KqCDa3tSg1U'
+  turnstileSiteKey: '1x00000000000000000000AA'
 
 };
