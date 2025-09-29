@@ -1,0 +1,47 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <!-- Goals -->
+        <mat-form-field class="w-full">
+            <mat-label>Goals</mat-label>
+            <textarea
+                matInput
+                [formControlName]="'goals'"
+                [rows]="6"
+                placeholder="What should the agent achieve?"
+            ></textarea>
+        </mat-form-field>
+    </div>
+
+    <!-- Tips Section -->
+    <fuse-alert
+        class="mt-6"
+        [appearance]="'outline'"
+        [type]="'basic'"
+        [showIcon]="false"
+    >
+        <span fuseAlertTitle>About Goals</span>
+        <div class="space-y-2">
+            <p>The goal defines what the agent aims to accomplish in each conversation,
+                providing direction and purpose. Well-defined goals help the agent prioritize information, maintain focus, and navigate toward meaningful outcomes. Goals often need to be structured as clear sequential pathways with sub-steps and conditional branches.
+            </p>
+            <ul class="list-disc ml-4 space-y-1">
+                <!-- bullet point -->
+                <li>
+                    <b>Primary objective:</b> Clearly state the main outcome your agent should achieve. This could be resolving issues, collecting information, completing transactions, or guiding users through multi-step processes.
+                </li>
+                <li>
+                    <b>Logical decision pathways:</b> For complex interactions, define explicit sequential steps with decision points. Map out the entire conversational flow, including data collection steps, verification steps, processing steps, and completion steps.
+                </li>
+                <li>
+                    <b>User-centered framing:</b> Frame goals around helping the user rather than business objectives. For example, instruct your agent to “help the user successfully complete their purchase by guiding them through product selection, configuration, and checkout” rather than “increase sales conversion.”
+                </li>
+                <li>
+                    <b>Decision logic:</b> Include conditional pathways that adapt based on user responses. Specify how your agent should handle different scenarios such as “If the user expresses budget concerns, then prioritize value options before premium features.”
+                </li>
+                <li>
+                    <b>Evaluation criteria & data collection:</b> Define what constitutes a successful interaction, so you know when the agent has fulfilled its purpose. Include both primary metrics (e.g., “completed booking”) and secondary metrics (e.g., “collected preference data for future personalization”).
+                </li>
+            </ul>
+        </div>
+    </fuse-alert>
+</div>

@@ -116,7 +116,7 @@ export class AuthSignInComponent implements OnInit, AfterViewInit {
                 'error-callback': () => {
                     this.captchaToken = '';
                     this.signInForm.get('captchaToken')?.reset();
-                },
+                }
             });
         };
 

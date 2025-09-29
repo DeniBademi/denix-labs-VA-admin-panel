@@ -1,0 +1,43 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="mb-8 flex items-end justify-between gap-4">
+            <div>
+                <div class="text-3xl font-semibold tracking-tight leading-8">Availability</div>
+                <div class="font-medium tracking-tight text-secondary">Configure working hours and days for this agent.</div>
+            </div>
+            <mat-button-toggle-group name="availabilityView" [(ngModel)]="selected" class="rounded-lg overflow-hidden border border-[var(--color-border)]">
+                <mat-button-toggle [value]="'hours'">
+                    <mat-icon [svgIcon]="'heroicons_outline:clock'" class="mr-2"></mat-icon>
+                    Working hours
+                </mat-button-toggle>
+                <mat-button-toggle [value]="'location'" disabled>
+                    <mat-icon [svgIcon]="'heroicons_outline:map-pin'" class="mr-2"></mat-icon>
+                    Location (Coming soon)
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+
+        <div>
+            <ng-container [ngSwitch]="selected">
+                <section *ngSwitchCase="'hours'" class="space-y-4">
+                    <div class="mb-2">
+                        <div class="text-xl font-semibold">Working hours</div>
+                        <div class="text-md text-secondary">Set the days and hours when the agent is available.</div>
+                    </div>
+                    <availability-work-hours #workHoursRef [parentForm]="form" (save)="save()"></availability-work-hours>
+
+                </section>
+
+                <section *ngSwitchCase="'location'" class="space-y-4">
+                    <div class="mb-2">
+                        <div class="text-xl font-semibold">Location</div>
+                        <div class="text-md text-secondary">Work in progress.</div>
+                    </div>
+                    <div class="bg-card rounded-2xl shadow p-6">
+                        <div class="text-md text-secondary">This section is under construction.</div>
+                    </div>
+                </section>
+            </ng-container>
+        </div>
+    </div>
+</div>

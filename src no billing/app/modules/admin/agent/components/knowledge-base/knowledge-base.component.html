@@ -1,0 +1,92 @@
+<div class="mt-8" [formGroup]="parentForm">
+    <!-- Upload section -->
+    <div class="flex flex-col">
+        <div class="flex justify-end mb-6">
+            <button
+                mat-flat-button
+                [color]="'primary'"
+                (click)="fileInput.click()"
+                [disabled]="isUploading"
+            >
+                <mat-icon [svgIcon]="'heroicons_outline:document-plus'"></mat-icon>
+                <span class="ml-2">Upload PDF</span>
+            </button>
+            <input
+                #fileInput
+                type="file"
+                [accept]="acceptedFileTypes"
+                class="hidden"
+                (change)="onFileSelected($event)"
+            >
+        </div>
+
+        <!-- Upload progress -->
+        <mat-progress-bar
+            *ngIf="isUploading"
+            [mode]="'indeterminate'"
+            class="mb-4"
+        ></mat-progress-bar>
+    </div>
+
+    <!-- Files list -->
+    <div class="space-y-4">
+        <div
+            *ngFor="let file of parentForm.get('knowledgeBase').value"
+            class="flex items-center justify-between p-4 bg-card rounded-2xl shadow"
+        >
+            <!-- File info -->
+            <div class="flex items-center flex-grow min-w-0">
+                <mat-icon
+                    class="text-red-500 mr-4 icon-size-6"
+                    [svgIcon]="'heroicons_outline:document'"
+                ></mat-icon>
+                <div class="flex flex-col min-w-0">
+                    <span class="font-medium truncate">{{file.name}}</span>
+                    <div class="flex items-center text-sm text-gray-600 space-x-4">
+                        <span *ngIf="file.size">{{formatFileSize(file.size)}}</span>
+                        <span *ngIf="file.uploadedAt">{{formatDate(file.uploadedAt)}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center space-x-2 ml-4">
+                <button
+                    mat-icon-button
+                    [matTooltip]="'Download'"
+                    (click)="downloadFile(file.url, file.name)"
+                >
+                    <mat-icon
+                        class="text-blue-500"
+                        [svgIcon]="'heroicons_outline:arrow-down-tray'"
+                    ></mat-icon>
+                </button>
+                <button
+                    mat-icon-button
+                    [matTooltip]="'Delete'"
+                    (click)="deleteFile(file)"
+                >
+                    <mat-icon
+                        class="text-red-500"
+                        [svgIcon]="'heroicons_outline:trash'"
+                    ></mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    <div
+        *ngIf="!parentForm.get('knowledgeBase').value?.length"
+        class="flex flex-col items-center justify-center p-8 bg-gray-100 rounded-2xl dark:bg-gray-800 dark:text-white"
+    >
+        <mat-icon
+            class="text-gray-400 icon-size-24"
+            [svgIcon]="'heroicons_outline:document'"
+        ></mat-icon>
+        <div class="mt-4 text-gray-600 text-center">
+            <p class="font-medium">No files uploaded</p>
+            <p class="text-sm">Upload PDF files to build your knowledge base</p>
+        </div>
+    </div>
+</div>

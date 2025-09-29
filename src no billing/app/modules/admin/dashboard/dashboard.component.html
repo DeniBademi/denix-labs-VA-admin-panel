@@ -1,0 +1,65 @@
+<div class="flex w-full flex-auto flex-col">
+    <div class="mx-auto flex w-full max-w-screen-xl flex-wrap p-6 md:p-8">
+        <!-- Title -->
+        <div class="flex w-full items-center justify-between">
+            <div>
+                <div class="text-3xl font-semibold leading-8 tracking-tight">
+                    Agent Analytics
+                </div>
+                <div class="text-secondary font-medium tracking-tight">
+                    Monitor agent performance and usage metrics
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Statistics -->
+        <div class="bg-card mt-8 flex flex-auto flex-col overflow-hidden rounded-2xl shadow">
+            <div class="m-6 mb-0 flex items-start justify-between">
+                <div class="truncate text-lg font-medium leading-6 tracking-tight">
+                    Usage Statistics
+                </div>
+                <div class="ml-2">
+                    <mat-button-toggle-group class="hidden space-x-1 border-none sm:inline-flex" value="day" #timeframeSelector="matButtonToggleGroup">
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="day">Daily</mat-button-toggle>
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="week">Weekly</mat-button-toggle>
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="month">Monthly</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </div>
+            <div class="mt-3 flex h-80 flex-auto flex-col">
+                <apx-chart class="h-full w-full flex-auto" [chart]="chartUsage.chart" [colors]="chartUsage.colors" [dataLabels]="chartUsage.dataLabels" [grid]="chartUsage.grid" [legend]="chartUsage.legend" [series]="chartUsage.series" [stroke]="chartUsage.stroke" [tooltip]="chartUsage.tooltip" [xaxis]="chartUsage.xaxis" [yaxis]="chartUsage.yaxis"></apx-chart>
+            </div>
+        </div>
+
+        <!-- Campaign Performance -->
+        <div class="bg-card mt-8 flex flex-auto flex-col overflow-hidden rounded-2xl shadow">
+            <div class="m-6 mb-0 flex items-start justify-between">
+                <div class="truncate text-lg font-medium leading-6 tracking-tight">
+                    Campaign Performance
+                </div>
+            </div>
+            <div class="mt-3 flex h-80 flex-auto flex-col">
+                <apx-chart class="h-full w-full flex-auto" [chart]="chartCampaign.chart" [colors]="chartCampaign.colors" [dataLabels]="chartCampaign.dataLabels" [grid]="chartCampaign.grid" [legend]="chartCampaign.legend" [plotOptions]="chartCampaign.plotOptions" [series]="chartCampaign.series" [stroke]="chartCampaign.stroke" [tooltip]="chartCampaign.tooltip" [xaxis]="chartCampaign.xaxis" [yaxis]="chartCampaign.yaxis"></apx-chart>
+            </div>
+        </div>
+
+        <!-- Frustration Score -->
+        <div class="bg-card mt-8 flex flex-auto flex-col overflow-hidden rounded-2xl shadow">
+            <div class="m-6 mb-0 flex items-start justify-between">
+                <div class="truncate text-lg font-medium leading-6 tracking-tight">
+                    Frustration Score
+                </div>
+                <div class="ml-2">
+                    <mat-button-toggle-group class="hidden space-x-1 border-none sm:inline-flex" value="day" #frustrationTimeframeSelector="matButtonToggleGroup">
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="day">Daily</mat-button-toggle>
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="week">Weekly</mat-button-toggle>
+                        <mat-button-toggle class="overflow-hidden rounded-full border-none px-1.5 font-medium" value="month">Monthly</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </div>
+            <div class="mt-3 flex h-80 flex-auto flex-col">
+                <apx-chart class="h-full w-full flex-auto" [chart]="chartFrustration.chart" [colors]="chartFrustration.colors" [dataLabels]="chartFrustration.dataLabels" [grid]="chartFrustration.grid" [legend]="chartFrustration.legend" [series]="chartFrustration.series" [stroke]="chartFrustration.stroke" [tooltip]="chartFrustration.tooltip" [xaxis]="chartFrustration.xaxis" [yaxis]="chartFrustration.yaxis"></apx-chart>
+            </div>
+        </div>
+    </div>
+</div>

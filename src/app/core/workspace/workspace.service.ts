@@ -73,6 +73,20 @@ export class WorkspaceService {
         }
     }
 
+
+    async getOrganizationId(): Promise<string | null> {
+        const supabase = this._supabase.getSupabase;
+        const { data, error } = await supabase
+            .from('organizations')
+            .select('id')
+            .single();
+
+        if (error) {
+            return null;
+        }
+        return data?.id ?? null;
+    }
+
     setWorkspaceId(workspaceId: string | null): void {
         this._workspaceId.next(workspaceId);
         if (workspaceId) {

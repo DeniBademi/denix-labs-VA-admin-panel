@@ -47,6 +47,7 @@ export class NavigationService {
             { id: 'agents', title: 'Agents', type: 'basic', icon: 'heroicons_outline:user-group', link: '/agents' },
             { id: 'calls', title: 'Calls', type: 'basic', icon: 'heroicons_outline:phone', link: '/calls' },
             { id: 'users', title: 'User Management', type: 'basic', icon: 'heroicons_outline:users', link: '/users' },
+            { id: 'billing', title: 'Billing', type: 'basic', icon: 'heroicons_outline:credit-card', link: '/billing' },
         ];
 
         // Fetch agents for this workspace

@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Create new agent</h2>
+<div mat-dialog-content>
+    <form [formGroup]="form" class="flex flex-col gap-4">
+        <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="Agent name" formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="agent_type">
+                <mat-option value="receptionist">Receptionist</mat-option>
+                <mat-option value="sales">Sales</mat-option>
+                <mat-option value="custom">Custom</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+    <div class="text-sm text-hint">Agents are scoped to your current workspace.</div>
+    <div class="text-xs text-hint">You can configure the agent after creating it.</div>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">Create</button>
+
+</div>
+
+

@@ -1,0 +1,60 @@
+<div class="bg-card rounded-2xl shadow p-6 w-1/2">
+    <div class="flex items-center justify-between">
+        <div class="mb-4">
+            <label class="block text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Working hours
+            </label>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button mat-stroked-button color="primary" (click)="setPermanentlyEnabled()">Always on</button>
+            <button mat-stroked-button color="warn" (click)="setPermanentlyDisabled()">Always off</button>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end mt-2">
+            <mat-form-field>
+                <mat-label>Timezone</mat-label>
+                <input matInput [value]="availabilityForm?.get('timezone')?.value || ''" (input)="setTimezone($any($event.target).value)" placeholder="e.g. Europe/Sofia" />
+            </mat-form-field>
+        </div>
+
+        <div class="divide-y rounded border">
+            <div class="p-3" *ngFor="let day of weekdays; let i = index">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-start gap-2 shrink-0 min-w-40">
+                        <mat-checkbox [formControl]="days.at(i).get('enabled')" (change)="onEnabledChange(i, $event.checked)">
+                            {{ day }}
+                        </mat-checkbox>
+                    </div>
+
+                    <div class="flex-1 flex justify-center items-center">
+                        <div class="flex flex-col gap-2" *ngIf="days.at(i).get('enabled')?.value" >
+                            <div class="flex items-center gap-2" *ngFor="let r of getRanges(i).controls; let j = index">
+                                <mat-form-field class="w-25 sm:w-25" subscriptSizing="dynamic">
+                                    <input matInput type="time" placeholder="Start" step="60" [formControl]="getRanges(i).at(j).get('start')" (keydown.enter)="onTimeEnter($event)" />
+                                </mat-form-field>
+                                <span class="text-sm text-secondary">–</span>
+                                <mat-form-field class="w-25 sm:w-25" subscriptSizing="dynamic" >
+                                    <input matInput type="time" placeholder="End" step="60" [formControl]="getRanges(i).at(j).get('end')" (keydown.enter)="onTimeEnter($event)" />
+                                </mat-form-field>
+                                <button mat-icon-button color="warn" aria-label="Remove range" (click)="removeRange(i, j)">
+                                    <mat-icon svgIcon="heroicons_outline:trash"></mat-icon>
+                                </button>
+                                <button mat-icon-button color="primary" aria-label="Add time range" (click)="addRange(i)">
+                                    <mat-icon svgIcon="heroicons_outline:plus"></mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button mat-flat-button color="primary" (click)="save.emit()">Save</button>
+        </div>
+    </div>
+</div>

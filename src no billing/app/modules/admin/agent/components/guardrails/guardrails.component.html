@@ -1,0 +1,42 @@
+<div class="mt-8">
+    <div [formGroup]="parentForm">
+        <!-- Guardrails -->
+        <mat-form-field class="w-full">
+            <mat-label>Guardrails</mat-label>
+            <textarea
+                matInput
+                [formControlName]="'guardrails'"
+                [rows]="6"
+                placeholder="Constraints, do's and don'ts"
+            ></textarea>
+        </mat-form-field>
+
+        <!-- Tips -->
+        <fuse-alert
+            class="mt-6"
+            [appearance]="'outline'"
+            [type]="'basic'"
+            [showIcon]="false"
+        >
+        <span fuseAlertTitle>About Guardrails</span>
+        <div class="space-y-2">
+            <p>Guardrails define boundaries and rules for your agent, preventing inappropriate responses and guiding behavior in sensitive situations. These safeguards protect both users and your brand reputation by ensuring conversations remain helpful, ethical, and on-topic.</p>
+
+            <ul class="list-disc ml-4 space-y-1">
+                <li>
+                    <b>Content boundaries:</b> Clearly specify topics your agent should avoid or handle with care and how to gracefully redirect such conversations.
+                </li>
+                <li>
+                    <b>Error handling:</b> Provide instructions for when your agent lacks knowledge or certainty, emphasizing transparency over fabrication. Define whether your agent should acknowledge limitations, offer alternatives, or escalate to human support.
+                </li>
+                <li>
+                    <b>Persona maintenance:</b> Establish guidelines to keep your agent in character and prevent it from breaking immersion by discussing its AI nature or prompt details unless specifically required.
+                </li>
+                <li>
+                    <b>Response constraints:</b> Set appropriate limits on verbosity, personal opinions, or other aspects that might negatively impact the conversation flow or user experience.
+                </li>
+            </ul>
+        </div>
+        </fuse-alert>
+    </div>
+</div>

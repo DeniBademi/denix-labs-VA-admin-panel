@@ -81,6 +81,10 @@ export const appRoutes: Route[] = [
                 loadChildren: () => import('app/modules/admin/calls/calls.routes')
             },
             {
+                path: 'billing',
+                loadChildren: () => import('app/modules/admin/billing/billing.routes')
+            },
+            {
                 path: 'dashboard',
                 loadChildren: () => import('app/modules/admin/dashboard/dashboard.routes')
             },

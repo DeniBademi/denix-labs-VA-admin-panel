@@ -1,0 +1,57 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+
+    .mat-mdc-dialog-content {
+        max-height: unset;
+        height: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .mat-tree {
+        background: transparent;
+    }
+
+    .mat-tree-node {
+        min-height: unset;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+    }
+
+    .mat-nested-tree-node {
+        .mat-tree-node {
+            padding-left: 24px;
+        }
+
+        .mat-nested-tree-node {
+            .mat-tree-node {
+                padding-left: 48px;
+            }
+
+            .mat-nested-tree-node {
+                .mat-tree-node {
+                    padding-left: 72px;
+                }
+            }
+        }
+    }
+
+    .example-tree-invisible {
+        display: none;
+    }
+
+    .mat-mdc-form-field {
+        width: 100%;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper,
+    ::ng-deep .mat-mdc-form-field-hint-wrapper,
+    ::ng-deep .mat-mdc-select-panel {
+        z-index: 40 !important;
+    }
+}

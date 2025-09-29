@@ -1,0 +1,62 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Header -->
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <div class="text-3xl font-semibold tracking-tight leading-8">Agents</div>
+                <div class="font-medium tracking-tight text-secondary">Manage your agents</div>
+            </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-2">
+                <button mat-flat-button [color]="'primary'" (click)="openCreateDialog()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2">New Agent</span>
+                </button>
+            </div>
+        </div>
+
+    <div class="flex flex-col gap-6 mt-8">
+    <table mat-table [dataSource]="agents" class="w-full">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let a">{{ a.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let a">{{ a.agent_type }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>Agent ID</th>
+            <td mat-cell *matCellDef="let a">
+                <code>{{ a.id }}</code>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let a" class="text-right">
+                <a [routerLink]="['/agent', a.id]" mat-button>
+                    <mat-icon>settings</mat-icon>
+                    <span class="ml-2">Configure</span>
+                </a>
+                <a mat-button color="warn" (click)="deleteAgent(a)" matTooltip="Delete agent">
+                    <mat-icon>delete</mat-icon>
+                    <span class="ml-2">Delete</span>
+                </a>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    </div>
+
+    <div class="text-sm text-hint" *ngIf="!agents?.length">
+        No agents yet. Create your first agent to get started.
+    </div>
+</div>
+
+

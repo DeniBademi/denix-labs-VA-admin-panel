@@ -32,9 +32,8 @@ export class AgentsService {
             const query = supabase
                 .from('agent')
                 .select('id, name, agent_type, created_at')
-                .eq('workspace_id', wsId)
                 .order('created_at', { ascending: false });
-            const finalQuery = query;
+            const finalQuery = wsId ? query.eq('workspace_id', wsId) : query;
             const { data, error } = await finalQuery;
             if (error) throw error;
             const list: AgentListItem[] = (data ?? []).map((row: any) => ({

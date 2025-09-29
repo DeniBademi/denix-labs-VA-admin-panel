@@ -1,0 +1,291 @@
+<div class="flex flex-col flex-auto min-h-0">
+    <!-- Dialog header -->
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-gray-100 border-b">
+        <div class="text-lg font-medium tracking-tight">
+            {{ isEdit ? 'Edit Campaign' : 'Add Campaign' }}
+        </div>
+        <button
+            mat-icon-button
+            [matDialogClose]="undefined">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+
+    <!-- Dialog content -->
+    <div class="flex-auto p-6 sm:p-8 overflow-y-auto">
+        <form [formGroup]="campaignForm">
+            <!-- Basic information -->
+            <div class="text-xl font-medium tracking-tight leading-6 mb-6">Campaign Details</div>
+
+            <!-- Name -->
+            <mat-form-field class="w-full">
+                <mat-label>Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'name'"
+                    [placeholder]="'Enter campaign name'">
+                <mat-error *ngIf="campaignForm.get('name').hasError('required')">
+                    Name is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Banner URL -->
+            <mat-form-field class="w-full mt-4">
+                <mat-label>Banner URL</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'bannerUrl'"
+                    [placeholder]="'Enter banner image URL'">
+                <mat-error *ngIf="campaignForm.get('bannerUrl').hasError('required')">
+                    Banner URL is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Forward URL -->
+            <mat-form-field class="w-full mt-4">
+                <mat-label>Forward URL</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'forwardUrl'"
+                    [placeholder]="'Enter destination URL'">
+                <mat-error *ngIf="campaignForm.get('forwardUrl').hasError('required')">
+                    Forward URL is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Status -->
+            <mat-form-field class="w-full mt-4">
+                <mat-label>Status</mat-label>
+                <mat-select [formControlName]="'status'">
+                    <mat-option
+                        *ngFor="let option of statusOptions; trackBy: trackByFn"
+                        [value]="option.value">
+                        {{ option.label }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="campaignForm.get('status').hasError('required')">
+                    Status is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- Date range -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <mat-form-field>
+                    <mat-label>Start Date</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="startPicker"
+                        [formControlName]="'startDate'">
+                    <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="startPicker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #startPicker></mat-datepicker>
+                    <mat-error *ngIf="campaignForm.get('startDate').hasError('required')">
+                        Start date is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>End Date</mat-label>
+                    <input
+                        matInput
+                        [matDatepicker]="endPicker"
+                        [formControlName]="'endDate'">
+                    <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="endPicker">
+                    </mat-datepicker-toggle>
+                    <mat-datepicker #endPicker></mat-datepicker>
+                    <mat-error *ngIf="campaignForm.get('endDate').hasError('required')">
+                        End date is required
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <!-- Targeting -->
+            <div class="text-xl font-medium tracking-tight leading-6 mt-8 mb-6">Campaign Targeting</div>
+
+            <!-- Target Categories -->
+            <div class="border rounded-lg p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-lg font-medium">Target Categories</div>
+                    <button
+                        mat-stroked-button
+                        [color]="'primary'"
+                        (click)="selectAllCategories()"
+                        type="button">
+                        Select All
+                    </button>
+                </div>
+
+                <!-- Category tree -->
+                <div class="max-h-64 overflow-y-auto">
+                    <mat-selection-list
+                        [formControlName]="'targetCategories'"
+                        [multiple]="true">
+                        <ng-container *ngFor="let category of categories; trackBy: trackByFn">
+                            <!-- Root category -->
+                            <mat-list-option
+                                [value]="category.path"
+                                [selected]="isParentSelected(category.path)"
+                                (selectionChange)="onCategorySelectionChange($event, category)">
+                                <div class="flex items-center">
+                                    <button
+                                        *ngIf="category.children?.length"
+                                        mat-icon-button
+                                        type="button"
+                                        (click)="$event.stopPropagation(); toggleCategory(category)">
+                                        <mat-icon>
+                                            {{isCategoryExpanded(category) ? 'expand_more' : 'chevron_right'}}
+                                        </mat-icon>
+                                    </button>
+                                    <span>{{ category.name }}</span>
+                                </div>
+                            </mat-list-option>
+
+                            <!-- Children -->
+                            <ng-container *ngIf="category.children?.length && isCategoryExpanded(category)">
+                                <ng-container *ngFor="let child of category.children; trackBy: trackByFn">
+                                    <mat-list-option
+                                        [value]="child.path"
+                                        [selected]="isParentSelected(child.path)"
+                                        (selectionChange)="onCategorySelectionChange($event, child)">
+                                        <div class="flex items-center">
+                                            <button
+                                                *ngIf="child.children?.length"
+                                                mat-icon-button
+                                                type="button"
+                                                (click)="$event.stopPropagation(); toggleCategory(child)">
+                                                <mat-icon>
+                                                    {{isCategoryExpanded(child) ? 'expand_more' : 'chevron_right'}}
+                                                </mat-icon>
+                                            </button>
+                                            <span class="ml-8">{{ child.name }}</span>
+                                        </div>
+                                    </mat-list-option>
+
+                                    <!-- Grandchildren -->
+                                    <ng-container *ngIf="child.children?.length && isCategoryExpanded(child)">
+                                        <mat-list-option
+                                            *ngFor="let grandChild of child.children; trackBy: trackByFn"
+                                            [value]="grandChild.path"
+                                            class="ml-16">
+                                            {{ grandChild.name }}
+                                        </mat-list-option>
+                                    </ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </ng-container>
+                    </mat-selection-list>
+                </div>
+
+                <!-- Selected categories preview -->
+                <div class="mt-4" *ngIf="campaignForm.get('targetCategories').value?.length">
+                    <div class="text-sm font-medium mb-2">Selected Categories:</div>
+                    <div class="flex flex-wrap gap-2">
+                        <mat-chip-set>
+                            <mat-chip
+                                *ngFor="let path of campaignForm.get('targetCategories').value"
+                                [removable]="true"
+                                (removed)="removeCategory(path)">
+                                {{ getCategoryName(path) }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                        </mat-chip-set>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Products -->
+            <div class="border rounded-lg p-4 mt-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-lg font-medium">Target Products</div>
+                    <div class="flex items-center gap-2">
+                        <mat-form-field class="w-64">
+                            <mat-label>Search Products</mat-label>
+                            <input
+                                matInput
+                                [ngModel]="productSearchQuery"
+                                (ngModelChange)="filterProducts($event)"
+                                [ngModelOptions]="{standalone: true}">
+                            <button
+                                *ngIf="productSearchQuery"
+                                matSuffix
+                                mat-icon-button
+                                (click)="productSearchQuery = ''; filterProducts('')">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </mat-form-field>
+                        <button
+                            mat-stroked-button
+                            [color]="'primary'"
+                            (click)="selectAllFilteredProducts()"
+                            type="button">
+                            Select All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product list -->
+                <div class="max-h-64 overflow-y-auto">
+                    <mat-selection-list
+                        [formControlName]="'targetProducts'"
+                        [multiple]="true">
+                        <mat-list-option
+                            *ngFor="let product of filteredProducts; trackBy: trackByFn"
+                            [value]="product.id">
+                            <div class="flex items-center gap-4">
+                                <img
+                                    [src]="product.imageUrl"
+                                    [alt]="product.name"
+                                    class="w-12 h-12 object-cover rounded">
+                                <div>
+                                    <div>{{ product.name }}</div>
+                                    <div class="text-sm text-secondary">{{ product.category }}</div>
+                                </div>
+                            </div>
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+
+                <!-- Selected products preview -->
+                <div class="mt-4" *ngIf="campaignForm.get('targetProducts').value?.length">
+                    <div class="text-sm font-medium mb-2">Selected Products:</div>
+                    <div class="flex flex-wrap gap-2">
+                        <mat-chip-set>
+                            <mat-chip
+                                *ngFor="let id of campaignForm.get('targetProducts').value"
+                                [removable]="true"
+                                (removed)="removeProduct(id)">
+                                {{ getProductName(id) }}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                        </mat-chip-set>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Targeting error -->
+            <mat-error *ngIf="campaignForm.hasError('noTargeting')" class="mt-2">
+                Please select at least one category or product
+            </mat-error>
+        </form>
+    </div>
+
+    <!-- Dialog footer -->
+    <div class="sticky bottom-0 flex items-center justify-end gap-2 px-6 py-4 border-t bg-gray-50 z-50">
+        <button
+            mat-button
+            [matDialogClose]="undefined">
+            Cancel
+        </button>
+        <button
+            mat-flat-button
+            [color]="'primary'"
+            [disabled]="campaignForm.invalid"
+            (click)="saveCampaign()">
+            {{ isEdit ? 'Save' : 'Create' }}
+        </button>
+    </div>
+</div>

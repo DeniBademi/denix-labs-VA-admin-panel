@@ -1,0 +1,125 @@
+/* @font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+    font-named-instance: 'Regular';
+    src: url('../../public/fonts/inter/Inter-roman.var.woff2?v=3.18')
+        format('woff2');
+}
+
+@font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: italic;
+    font-named-instance: 'Italic';
+    src: url('../../public/fonts/inter/Inter-italic.var.woff2?v=3.18')
+        format('woff2');
+} */
+
+@font-face {
+    font-family: 'jakarta';
+    font-display: swap;
+    font-named-instance: 'Regular';
+    src: url("../../public/fonts/Plus_Jakarta_Sans/PlusJakartaSans-VariableFont_wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'jakarta-i';
+    font-display: swap;
+    font-named-instance: 'Italic';
+    src: url("../../public/fonts/Plus_Jakarta_Sans/PlusJakartaSans-Italic-VariableFont_wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'jakarta-i-static';
+    font-display: swap;
+    src: url("../../public/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-MediumItalic.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'nunito';
+    font-display: swap;
+    src: url("../../public/fonts/Nunito_Sans/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf") format("opentype");
+}
+
+@font-face {
+    font-family: 'nunito-i';
+    font-display: swap;
+    src: url("../../public/fonts/Nunito_Sans/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf") format("opentype");
+}
+
+@theme inline {
+  --color-fg0: var(--fg0);
+  --color-fg1: var(--fg1);
+  --color-fg2: var(--fg2);
+  --color-fg3: var(--fg3);
+  --color-fg4: var(--fg4);
+  --color-fgSerious: var(--fgSerious);
+  --color-fgSuccess: var(--fgSuccess);
+  --color-fgModerate: var(--fgModerate);
+  --color-fgAccent: var(--fgAccent);
+
+  --color-bg1: var(--bg1);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-bgSerious: var(--bgSerious);
+  --color-bgSerious2: var(--bgSerious2);
+  --color-bgSuccess: var(--bgSuccess);
+  --color-bgModerate: var(--bgModerate);
+  --color-bgAccent: var(--bgAccent);
+  --color-bgAccentPrimary: var(--bgAccentPrimary);
+
+  --color-separator1: var(--separator1);
+  --color-separator2: var(--separator2);
+  --color-separatorSerious: var(--separatorSerious);
+  --color-separatorSuccess: var(--separatorSuccess);
+  --color-separatorModerate: var(--separatorModerate);
+  --color-separatorAccent: var(--separatorAccent);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--separator1);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-button: var(--bg2);
+  --color-button-hover: var(--bg3);
+  --color-button-foreground: var(--fg1);
+  --color-button-primary: var(--bg2);
+  --color-button-primary-foreground: var(--fgSerious);
+  --color-button-secondary: var(--bgAccentPrimary);
+  --color-button-secondary-foreground: var(--fgAccent);
+
+  --color-destructive: var(--bgSerious);
+  --color-destructive-hover: var(--bgSerious2);
+  --color-destructive-foreground: var(--fgSerious);
+}

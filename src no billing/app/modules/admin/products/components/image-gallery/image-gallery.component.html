@@ -1,0 +1,43 @@
+<div class="w-full">
+    <div class="flex items-center justify-center gap-3">
+        <button
+            *ngIf="hasImages && urls.length > 1"
+            type="button"
+            class="bg-white/80 hover:bg-white rounded-full p-1 shadow"
+            (click)="$event.stopPropagation(); prev()">
+            <mat-icon [svgIcon]="'heroicons_outline:chevron-left'"></mat-icon>
+        </button>
+
+        <div class="aspect-video w-[560px] bg-gray-100 rounded border overflow-hidden flex items-center justify-center">
+            <ng-container *ngIf="hasImages && currentUrl; else noImage">
+                <img
+                    [src]="currentUrl"
+                    class="max-h-full max-w-full object-contain"
+                    (error)="imageError = true"
+                />
+                <div *ngIf="imageError" class="absolute inset-0 flex items-center justify-center text-secondary">
+                    Failed to load image
+                </div>
+            </ng-container>
+            <ng-template #noImage>
+                <div class="flex items-center justify-center h-full w-full text-secondary">
+                    Image previews will appear here
+                </div>
+            </ng-template>
+        </div>
+
+        <button
+            *ngIf="hasImages && urls.length > 1"
+            type="button"
+            class="bg-white/80 hover:bg-white rounded-full p-1 shadow"
+            (click)="$event.stopPropagation(); next()">
+            <mat-icon [svgIcon]="'heroicons_outline:chevron-right'"></mat-icon>
+        </button>
+    </div>
+
+    <div *ngIf="hasImages" class="mt-2 text-center text-sm text-secondary">
+        {{ currentIndex + 1 }} / {{ urls.length }}
+    </div>
+</div>
+
+

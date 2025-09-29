@@ -1,0 +1,66 @@
+<div class="p-6 space-y-4">
+  <a routerLink="/calls" class="text-primary">← Back</a>
+  <h1 class="text-2xl font-semibold">Call detail</h1>
+  <div *ngIf="loading()">Loading...</div>
+  <div *ngIf="!loading() && call() as c" class="space-y-4">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="p-4 rounded border">
+        <div class="font-medium mb-2">Meta</div>
+        <div>Ended: {{ c.ended_at | date:'medium' }}</div>
+        <div>Agent: {{ c.agent_id }}</div>
+        <div>Duration: {{ c.duration_ms/1000 | number:'1.0-0' }}s</div>
+        <div>Turns: {{ c.turns_count }}</div>
+      </div>
+      <div class="p-4 rounded border">
+        <div class="font-medium mb-2">Metrics</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <div class="p-3 rounded bg-gray-50">
+            <div class="text-xs opacity-70">LLM Prompt Tokens</div>
+            <div class="text-lg font-semibold">{{ c.metrics_custom?.usage_summary?.llm_prompt_tokens || 0 }}</div>
+          </div>
+          <div class="p-3 rounded bg-gray-50">
+            <div class="text-xs opacity-70">LLM Completion Tokens</div>
+            <div class="text-lg font-semibold">{{ c.metrics_custom?.usage_summary?.llm_completion_tokens || 0 }}</div>
+          </div>
+          <div class="p-3 rounded bg-gray-50">
+            <div class="text-xs opacity-70">STT Audio (s)</div>
+            <div class="text-lg font-semibold">{{ c.metrics_custom?.usage_summary?.stt_audio_duration || 0 | number:'1.0-1' }}</div>
+          </div>
+          <div class="p-3 rounded bg-gray-50">
+            <div class="text-xs opacity-70">TTS Characters</div>
+            <div class="text-lg font-semibold">{{ c.metrics_custom?.usage_summary?.tts_characters_count || 0 }}</div>
+          </div>
+        </div>
+        <details class="mt-2">
+          <summary class="cursor-pointer text-sm">Raw Metrics (expand)</summary>
+          <pre class="text-xs whitespace-pre-wrap mt-2">STT: {{ c.metrics_stt | json }}</pre>
+          <pre class="text-xs whitespace-pre-wrap">LLM: {{ c.metrics_llm | json }}</pre>
+          <pre class="text-xs whitespace-pre-wrap">TTS: {{ c.metrics_tts | json }}</pre>
+          <pre class="text-xs whitespace-pre-wrap">Custom: {{ c.metrics_custom | json }}</pre>
+        </details>
+      </div>
+    </div>
+    <div class="p-4 rounded border">
+      <div class="font-medium mb-2">Transcript</div>
+      <div class="space-y-2">
+        <div *ngFor="let t of turns()" class="p-2 rounded bg-gray-50">
+          <div class="text-xs opacity-70 flex items-center gap-2">
+            <span>{{ t.role }} · #{{ t.turn_index }}</span>
+            <span *ngIf="t.interrupted" class="px-1.5 py-0.5 rounded bg-yellow-100 text-xs">interrupted</span>
+            <span *ngIf="t.transcript_confidence != null" class="px-1.5 py-0.5 rounded bg-blue-100 text-xs">conf {{ t.transcript_confidence | number:'1.2-2' }}</span>
+          </div>
+          <div>{{ t.content }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="p-4 rounded border">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-medium">Full Transcript</div>
+        <button class="px-2 py-1 border rounded text-sm" (click)="copyFullTranscript()">Copy</button>
+      </div>
+      <pre class="text-xs whitespace-pre-wrap">{{ c.full_transcript }}</pre>
+    </div>
+  </div>
+</div>
+
+

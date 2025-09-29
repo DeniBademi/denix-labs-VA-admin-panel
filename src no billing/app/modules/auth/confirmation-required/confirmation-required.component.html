@@ -1,0 +1,51 @@
+<div
+    class="flex min-w-0 flex-auto flex-col items-center sm:flex-row sm:justify-center md:items-start md:justify-start"
+>
+    <div
+        class="w-full px-4 py-8 sm:bg-card sm:w-auto sm:rounded-2xl sm:p-12 sm:shadow md:flex md:h-full md:w-1/2 md:items-center md:justify-end md:rounded-none md:p-16 md:shadow-none"
+    >
+        <div class="mx-auto w-full max-w-80 sm:mx-0 sm:w-80">
+            <!-- Logo -->
+            <div class="flex justify-center">
+                <div class="flex flex-col items-center">
+                    <img src="images/logo/logo-black.svg" class="block dark:hidden h-10 w-auto" />
+                    <img src="images/logo/logo.svg" class="hidden dark:block h-10 w-auto" />
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div
+                class="mt-8 text-4xl font-extrabold leading-tight tracking-tight"
+            >
+                Confirmation required
+            </div>
+            <div class="mt-4">
+                A confirmation mail with instructions has been sent to your
+                email address. Follow those instructions to confirm your email
+                address and activate your account.
+            </div>
+
+            <!-- Form footer -->
+            <div class="text-secondary mt-8 text-md font-medium">
+                <span>Return to</span>
+                <a
+                    class="ml-1 text-primary-500 hover:underline"
+                    [routerLink]="['/sign-in']"
+                    >sign in
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="particles-js"
+        class="relative hidden h-full w-1/2
+        flex-auto items-center justify-center
+        overflow-hidden bg-black dark:border-l md:flex
+        ltr:sm:bg-gradient-to-r rtl:sm:bg-gradient-to-l"
+        style="position: relative;">
+        <!-- Gradient border on the left -->
+        <div class="absolute left-0 top-0 h-full w-16 pointer-events-none z-10"
+            style="background: linear-gradient(to right, #fff 0%, transparent 100%);"></div>
+        <!-- Overlay gradient for background effect -->
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 via-black/20 to-black/60 dark:from-black/10 dark:via-black/30 dark:to-black/70"></div>
+    </div>
+</div>

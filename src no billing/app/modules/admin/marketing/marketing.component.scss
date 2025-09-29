@@ -1,0 +1,47 @@
+.mat-mdc-row {
+    .mat-mdc-cell {
+        @apply px-4 py-3;
+    }
+}
+
+.mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-elevated-container-color: transparent;
+    border: 1px solid currentColor;
+
+    &.mat-primary {
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-primary-50));
+    }
+
+    &.mat-accent {
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-accent-50));
+    }
+
+    &.mat-warn {
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-warn-50));
+    }
+
+    &.mat-green {
+        @apply text-green-600;
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-success-50));
+    }
+
+    &.mat-amber {
+        @apply text-amber-600;
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-warning-50));
+    }
+
+    &.mat-orange {
+        @apply text-orange-600;
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-orange-50));
+    }
+
+    &.mat-blue {
+        @apply text-blue-600;
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-blue-50));
+    }
+
+    &.mat-gray {
+        @apply text-gray-600;
+        --mdc-chip-elevated-container-color: rgb(var(--fuse-gray-50));
+    }
+}

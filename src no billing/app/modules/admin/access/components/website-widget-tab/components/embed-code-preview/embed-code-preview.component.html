@@ -1,0 +1,29 @@
+<div class="bg-card rounded-2xl shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <div class="text-lg font-semibold">Embed code</div>
+            <div class="text-sm text-secondary">Add this code to your index.html to embed the widget.</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <a mat-stroked-button [href]="downloadHref" download="popup.js" class="flex-shrink-0">
+                <mat-icon [svgIcon]="'heroicons_outline:arrow-down-tray'"></mat-icon>
+                <span class="ml-2">popup.js</span>
+            </a>
+        </div>
+    </div>
+    <div class="relative rounded bg-gray-900 text-gray-100 p-4 font-mono text-sm overflow-auto">
+        <button
+            (click)="copy(textarea)"
+            class="absolute top-2 right-2 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:border-gray-400 dark:hover:border-gray-500 z-10">
+            Copy
+        </button>
+        <textarea
+            style="padding: 0px !important; margin: 0px !important;"
+            #textarea
+            fuse-highlight
+            [code]="code"
+            [lang]="'html'">
+        </textarea>
+    </div>
+</div>
